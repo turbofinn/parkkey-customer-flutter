@@ -4,7 +4,8 @@ import 'package:parkey_customer/Fragment/add_vehicle_fragment.dart';
 
 class ProfileFragmentBase extends StatefulWidget {
   BuildContext context;
-  ProfileFragmentBase({required this.context,super.key});
+  String path;
+  ProfileFragmentBase({required this.context, required this.path,super.key});
 
   @override
   State<ProfileFragmentBase> createState() => _ProfileFragmentBaseState();
@@ -17,7 +18,7 @@ class _ProfileFragmentBaseState extends State<ProfileFragmentBase> {
       onGenerateRoute: (RouteSettings settings) {
         WidgetBuilder builder;
         // Determine the screen to display based on the route name
-        switch (settings.name) {
+        switch (widget.path) {
           case '/':
             builder = (BuildContext _) => ProfileFragment(context: widget.context,);
             break;

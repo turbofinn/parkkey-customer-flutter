@@ -15,7 +15,9 @@ import '../Fragment/parked_vehicle_fragment_base.dart';
 import '../Fragment/parked_vehicles_fragment.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  int index;
+  String path;
+  HomeScreen({required this.index, required this.path,super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -29,12 +31,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     parentHeight = MediaQuery.of(context).size.height;
+    if(widget.index == -1){
+      _currentIndex = 4;
+      widget.index = 0;
+    }
     tabs = [
-      HomeFragment(),
+      HomeFragment(context: context,),
       ParkedVehicleFragmentBase(),
       WalletFragment(),
       HistoryFragment(),
-      ProfileFragmentBase(context: context,),
+      ProfileFragmentBase(context: context,path: widget.path),
     ];
     return WillPopScope(
       onWillPop: () async {
@@ -58,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: (index) {
                     setState(() {
                       _currentIndex = index;
+                      widget.path = '/';
                     });
                   },
                   items: [

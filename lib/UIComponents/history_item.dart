@@ -11,10 +11,10 @@ import '../utils/auth_interceptor.dart';
 import '../utils/common_util.dart';
 class HistoryItem extends StatefulWidget {
   String name,vehicleNo,vehicleType;
-  String? address,time,date,timer;
+  String? address,time,date,timer,parkingCharges;
   bool isFromAddVehicle;
   final VoidCallback getVehicleHistory;
-   HistoryItem(this.name,this.vehicleNo,this.vehicleType,this.address,this.time,this.date,this.timer,this.isFromAddVehicle,this.getVehicleHistory,{super.key});
+   HistoryItem(this.name,this.vehicleNo,this.vehicleType,this.address,this.time,this.date,this.timer,this.isFromAddVehicle,this.getVehicleHistory, this.parkingCharges,{super.key});
 
   @override
   State<HistoryItem> createState() => _HistoryItemState();
@@ -200,11 +200,22 @@ class _HistoryItemState extends State<HistoryItem> {
                 ),
                 isVisibleFullCard ? Visibility(
                   visible: isVisibleFullCard,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      child: Text('Parked At: '+widget.address!,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600,color: Colors.black.withOpacity(0.5)),),
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          child: Text('Parked At: '+widget.address!,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600,color: Colors.black.withOpacity(0.5)),),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          child: widget.parkingCharges != null ? Text('Parking Charges: '+(widget.parkingCharges ?? ""),style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600,color: Colors.black.withOpacity(0.5)),) : Container(),
+                        ),
+                      ),
+                    ],
                   ),
                 ) : Container(),
                 isVisibleFullCard ? Visibility(
@@ -215,7 +226,7 @@ class _HistoryItemState extends State<HistoryItem> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            child: Text('Date: '+widget.date!,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600,color: Colors.black.withOpacity(0.5)),),
+                            child: Text(widget.date!,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600,color: Colors.black.withOpacity(0.5)),),
                           ),
                           Container(
                             child: Text('Time: '+widget.time!,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600,color: Colors.black.withOpacity(0.5)),),

@@ -9,10 +9,13 @@ part of 'parking_location_response.dart';
 ParkingLocationResponse _$ParkingLocationResponseFromJson(
         Map<String, dynamic> json) =>
     ParkingLocationResponse(
-      json['parkingSpaceID'] as String,
-      json['parkingSpaceName'] as String,
-      json['latitude'] as String,
-      json['longitude'] as String,
+      parkingSpaceID: json['parkingSpaceID'] as String?,
+      parkingSpaceName: json['parkingSpaceName'] as String?,
+      latitude: json['latitude'] as String?,
+      longitude: json['longitude'] as String?,
+      location: json['location'] as String?,
+      parkingSpaceStatus: json['parkingSpaceStatus'] as String?,
+      address: json['address'] as String?,
     );
 
 Map<String, dynamic> _$ParkingLocationResponseToJson(
@@ -22,4 +25,7 @@ Map<String, dynamic> _$ParkingLocationResponseToJson(
       'parkingSpaceName': instance.parkingSpaceName,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'location': instance.location,
+      'parkingSpaceStatus': instance.parkingSpaceStatus,
+      'address': instance.address,
     };

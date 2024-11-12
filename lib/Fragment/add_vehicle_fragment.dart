@@ -165,7 +165,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                         null,
                                         null,
                                         null,
-                                    true,getVehicleHistory);
+                                    true,getVehicleHistory, null);
                                   },
                                 ),
                               ),

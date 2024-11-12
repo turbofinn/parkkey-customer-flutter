@@ -285,7 +285,7 @@ class _PostLoginScreenState extends State<PostLoginScreen> {
       sharedPreferences.setString(Constants.VEHICLE_NO, vehicleNumberInputController.text);
       sharedPreferences.setString(Constants.VEHICLE_TYPE, vehicleType);
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(index: 0,path: '/',)));
 
     } on DioException catch (e) {
       String errorMessage = e.response?.data['message'];

@@ -7,7 +7,7 @@ import 'package:parkey_customer/UIComponents/history_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../colors/CustomColors.dart';
-import '../models/customer_vehicle_details_response.dart';
+import '../models/parked_vehicle_response.dart';
 import '../services/api_service.dart';
 import '../utils/Constants.dart';
 import '../utils/auth_interceptor.dart';
@@ -67,21 +67,14 @@ class _HistoryFragmentState extends State<HistoryFragment> {
               itemCount: customerVehicleResponseList.length,
               itemBuilder: (context, index) {
                 final item = customerVehicleResponseList[index];
-                return item.parkingLocation != null ? HistoryItem(
-                    customerName == null ? "NA" : customerName!,
+                return HistoryItem(
+                    customerName == null ? item.customerName ?? "NA" : customerName!,
                     item.vehicleNo,
                     item.vehicleType,
                     item.parkingLocation!,
-                    item.parkingDateTime!.substring(0, 10),
-                    item.parkingDateTime!.substring(11, 16),
-                    item.parkingDuration!,false,getVehicleHistory) : HistoryItem(
-                  customerName == null ? "NA" : customerName!,
-                    item.vehicleNo,
-                    item.vehicleType,
-                    null,
-                    null,
-                    null,
-                    null,false,getVehicleHistory);
+                    item.parkDate!,
+                    item.parkingStatus!,
+                    item.parkedDuration!,false,getVehicleHistory,item.parkingCharges);
               },
             ),
           )
@@ -107,7 +100,7 @@ class _HistoryFragmentState extends State<HistoryFragment> {
     final ApiService apiService = ApiService(dio);
 
     try {
-      final response = await apiService.getCustomerVehicleDetails(userID!);
+      final response = await apiService.getCustomerParkingHistory(userID!);
 
       if(response.customerVehicleList.isEmpty){
         setState(() {
@@ -120,9 +113,7 @@ class _HistoryFragmentState extends State<HistoryFragment> {
       int len = response.customerVehicleList.length;
       print('length--' + len.toString());
       for (int i = 0; i < len; i++) {
-        if (response.customerVehicleList.elementAt(i).parkingLocation == null) {
           tempList.add(response.customerVehicleList.elementAt(i));
-        }
       }
 
       print("historyFragment-->" + jsonEncode(tempList));

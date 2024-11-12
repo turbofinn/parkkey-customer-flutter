@@ -191,7 +191,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
             String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
 
             Future.delayed(Duration(seconds: 4), () {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen()));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen(index: 0,path: '/',)));
             });
 
           }
@@ -213,7 +213,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
 
           Future.delayed(Duration(seconds: 4), () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen()));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen(index: 0,path: '/',)));
           });
 
         }

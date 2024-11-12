@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Clippers/login_done_clipper1.dart';
 import '../Clippers/login_screen_clipper2.dart';
 import '../colors/CustomColors.dart';
+import '../screens/home_screen.dart';
 import '../services/api_service.dart';
 import '../utils/Constants.dart';
 import '../utils/auth_interceptor.dart';
@@ -225,7 +226,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.of(context).pushNamed('/AddVehicle');
+                              Navigator.of(widget.context).push(MaterialPageRoute(builder: (context) => HomeScreen(index: -1,path: '/AddVehicle',)));
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(left: 50, top: 20),

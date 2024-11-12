@@ -16,6 +16,7 @@ import '../models/create_ticket_response.dart';
 import '../models/customer_details_response.dart';
 import '../models/delete_vehicle_response.dart';
 import '../models/get_ticket_response.dart';
+import '../models/parked_vehicle_response.dart';
 import '../models/parking_location_response.dart';
 import '../models/parking_space_info_response.dart';
 import '../models/send_otp_response.dart';
@@ -44,6 +45,9 @@ abstract class ApiService{
 
   @GET('/customer-flow-handler/get-customer-vehicle-details')
   Future<CustomerVehicleDetailsResponse> getCustomerVehicleDetails(@Query('userID') String userID);
+
+  @GET('/customer-flow-handler/get-customer-parking-history')
+  Future<ParkedVehicleResponse> getCustomerParkingHistory(@Query('userID') String userID);
 
   @GET('/customer-flow-handler/get-customer-details')
   Future<CustomerDetailsResponse> getCustomerDetails(@Query('userID') String userID);

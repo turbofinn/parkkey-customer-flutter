@@ -87,7 +87,7 @@ class _ParkedFragmentState extends State<ParkedFragment> {
                             item.parkingLocation!,
                             item.parkingDateTime!.substring(0, 10),
                             item.parkingDateTime!.substring(11, 16),
-                            item.parkingDuration!,false,getVehicleHistory),
+                            item.parkingDuration!,false,getVehicleHistory, null),
                       );
                     },
                   ),
