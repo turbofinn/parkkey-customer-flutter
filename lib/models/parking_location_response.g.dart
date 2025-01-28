@@ -13,6 +13,8 @@ ParkingLocationResponse _$ParkingLocationResponseFromJson(
       json['parkingSpaceName'] as String,
       json['latitude'] as String,
       json['longitude'] as String,
+      ParkingLocationResponse._decodeParkingImages(
+          json['parkingImages'] as String),
     );
 
 Map<String, dynamic> _$ParkingLocationResponseToJson(
@@ -22,4 +24,6 @@ Map<String, dynamic> _$ParkingLocationResponseToJson(
       'parkingSpaceName': instance.parkingSpaceName,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'parkingImages':
+          ParkingLocationResponse._encodeParkingImages(instance.parkingImages),
     };

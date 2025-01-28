@@ -5,6 +5,12 @@ class PointsModel{
 LatLng point;
 String parkingSpaceID;
 double distance;
+final List<String> parkingImages; // Include parking images
 
-PointsModel(this.point, this.parkingSpaceID, this.distance);
+ PointsModel(
+    this.point,
+    this.parkingSpaceID,
+    this.distance, {
+    required this.parkingImages,
+  });
 }

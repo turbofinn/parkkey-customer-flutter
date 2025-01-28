@@ -22,6 +22,7 @@ class HistoryFragment extends StatefulWidget {
 
 class _HistoryFragmentState extends State<HistoryFragment> {
   List<CustomerVehicleResponse> customerVehicleResponseList = [];
+  List<CustomerVehicleResponse> originalList = []; // Holds unfiltered data
   bool isLoading = true;
   String errorMessage="";
   String ?customerName;
@@ -36,66 +37,90 @@ class _HistoryFragmentState extends State<HistoryFragment> {
 
   @override
   Widget build(BuildContext context) {
-    double parentHeight = MediaQuery.of(context).size.height;
+  double parentHeight = MediaQuery.of(context).size.height;
 
-    return SafeArea(
-        child: Material(
-      child: Column(
-        children: [
-          BackTopTitle('', Colors.black,
-              'Parking History', ''),
-          isLoading ? Center(
-            child: Container(
-              margin: EdgeInsets.only(top: parentHeight*0.2),
-              height: 300,
-              width: 300,
-              child: errorMessage != "" ? Center(child: Container(child: Text(errorMessage),),) : SizedBox(
-                child: Transform.scale(
-                  scale: 0.2,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(CustomColors.GREEN_BUTTON)),
-                    strokeWidth: 25,
-                  ),
-                ),
+  return SafeArea(
+      child: Material(
+    child: Column(
+      children: [
+        BackTopTitle('', Colors.black, 'Parking History', ''),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: TextField(
+            onChanged: (query) {
+              filterHistory(query); // Call search logic
+            },
+            decoration: InputDecoration(
+              hintText: 'Search by vehicle number or location',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
               ),
+              prefixIcon: Icon(Icons.search),
             ),
-          )
-          : Expanded(
-            child: ListView.builder(
-              shrinkWrap: true, // Adapt size to content
-              itemCount: customerVehicleResponseList.length,
-              itemBuilder: (context, index) {
-                final item = customerVehicleResponseList[index];
-                return item.parkingLocation != null ? HistoryItem(
-                    customerName == null ? "NA" : customerName!,
-                    item.vehicleNo,
-                    item.vehicleType,
-                    item.parkingLocation!,
-                    item.parkingDateTime!.substring(0, 10),
-                    item.parkingDateTime!.substring(11, 16),
-                    item.parkingDuration!,false,getVehicleHistory) : HistoryItem(
-                  customerName == null ? "NA" : customerName!,
-                    item.vehicleNo,
-                    item.vehicleType,
-                    null,
-                    null,
-                    null,
-                    null,false,getVehicleHistory);
-              },
-            ),
-          )
+          ),
+        ),
+        isLoading
+            ? Center(
+                child: Container(
+                  margin: EdgeInsets.only(top: parentHeight * 0.2),
+                  height: 300,
+                  width: 300,
+                  child: errorMessage != ""
+                      ? Center(
+                          child: Container(
+                            child: Text(errorMessage),
+                          ),
+                        )
+                      : SizedBox(
+                          child: Transform.scale(
+                            scale: 0.2,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(CustomColors.GREEN_BUTTON)),
+                              strokeWidth: 25,
+                            ),
+                          ),
+                        ),
+                ),
+              )
+            : Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true, // Adapt size to content
+                  itemCount: customerVehicleResponseList.length,
+                  itemBuilder: (context, index) {
+                    final item = customerVehicleResponseList[index];
+                    return item.parkingLocation != null
+                        ? HistoryItem(
+                            customerName ?? "NA",
+                            item.vehicleNo,
+                            item.vehicleType,
+                            item.parkingLocation!,
+                            item.parkingDateTime!.substring(0, 10),
+                            item.parkingDateTime!.substring(11, 16),
+                            item.parkingDuration!,
+                            false,
+                            getVehicleHistory)
+                        : HistoryItem(
+                            customerName ?? "NA",
+                            item.vehicleNo,
+                            item.vehicleType,
+                            null,
+                            null,
+                            null,
+                            null,
+                            false,
+                            getVehicleHistory);
+                  },
+                ),
+              )
+      ],
+    ),
+  ));
+}
 
-        ],
-      ),
-    ));
-  }
-
-  void getVehicleHistory() async {
-    print('histrotry-frag');
-    try{
-
-
+  
+  void getVehicleHistory([String? searchParam]) async {
+  try {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
     String? userID = sharedPreferences.getString(Constants.USER_ID);
@@ -106,56 +131,45 @@ class _HistoryFragmentState extends State<HistoryFragment> {
 
     final ApiService apiService = ApiService(dio);
 
-    try {
-      final response = await apiService.getCustomerVehicleDetails(userID!);
+    final response = await apiService.getCustomerVehicleDetails(userID!);
 
-      if(response.customerVehicleList.isEmpty){
-        setState(() {
-          errorMessage = Constants.EMPTY_VEHICLE_LIST;
-        });
-        return;
-      }
-
-      List<CustomerVehicleResponse> tempList = [];
-      int len = response.customerVehicleList.length;
-      print('length--' + len.toString());
-      for (int i = 0; i < len; i++) {
-        if (response.customerVehicleList.elementAt(i).parkingLocation == null) {
-          tempList.add(response.customerVehicleList.elementAt(i));
-        }
-      }
-
-      print("historyFragment-->" + jsonEncode(tempList));
-      print("historyFragment1-->" + jsonEncode(response.customerVehicleList));
-
+    if (response.customerVehicleList.isEmpty) {
       setState(() {
-        customerVehicleResponseList = tempList;
+        errorMessage = Constants.EMPTY_VEHICLE_LIST;
         isLoading = false;
-        print('HistoryFragment1');
-
       });
-
-      print(response.toString());
-
-    } on DioException catch (e) {
-      if(e.response?.statusCode == 400){
-        String errorMessage = e.response?.data['message'];
-        print("errorMessage---" + errorMessage.toString());
-        CommonUtil().showToast(errorMessage);
-        setState(() {
-          this.errorMessage = errorMessage;
-        });
-      }
-      else{
-        CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
-      }
+      return;
     }
-    }catch(e){
-      print('HistoryFragment2');
 
-      setState(() {
-          errorMessage = Constants.GENERIC_ERROR_MESSAGE;
-        });
-    }
+    setState(() {
+      originalList = response.customerVehicleList; // Save unfiltered list
+      customerVehicleResponseList = [...originalList]; // Initialize filtered list
+      isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      errorMessage = Constants.GENERIC_ERROR_MESSAGE;
+      isLoading = false;
+    });
   }
+}
+
+void filterHistory(String query) {
+  setState(() {
+    if (query.isEmpty) {
+      // Reset to the original unfiltered list
+      customerVehicleResponseList = [...originalList];
+    } else {
+      // Filter based on vehicle number or parking location
+      customerVehicleResponseList = originalList.where((item) {
+        final vehicleNoMatch = item.vehicleNo.toLowerCase().contains(query.toLowerCase());
+        final parkingLocationMatch =
+            (item.parkingLocation?.toLowerCase().contains(query.toLowerCase()) ?? false);
+        return vehicleNoMatch || parkingLocationMatch;
+      }).toList();
+    }
+  });
+}
+
+
 }

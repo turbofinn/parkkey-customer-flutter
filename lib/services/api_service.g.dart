@@ -388,6 +388,33 @@ class _ApiService implements ApiService {
   }
 
   @override
+  Future<dynamic> fetchPaymentHistory(Map<String, String> body) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _result = await _dio.fetch(_setStreamType<dynamic>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/customer-flow-handler/fetch-payment-history',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+    final value = _result.data;
+    return value;
+  }
+
+  @override
   Future<DeleteVehicleResponse> deleteVehicle(String vehicleNo) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'vehicleNo': vehicleNo};
