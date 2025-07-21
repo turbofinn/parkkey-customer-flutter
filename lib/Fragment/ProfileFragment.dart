@@ -15,6 +15,7 @@ import '../colors/CustomColors.dart';
 import '../services/api_service.dart';
 import '../utils/Constants.dart';
 import '../utils/auth_interceptor.dart';
+import 'add_vehicle_fragment.dart';
 
 class ProfileFragment extends StatefulWidget {
   BuildContext context;
@@ -225,7 +226,10 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.of(context).pushNamed('/AddVehicle');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AddVehicleFragment()),
+                              );
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(left: 50, top: 20),
@@ -509,6 +513,8 @@ class _ProfileFragmentState extends State<ProfileFragment> {
             primaryVehicle = response.primaryVehicle == null ? "" : response.primaryVehicle!;
             emailID = response.emailID == null ? "" : response.emailID!;
           }
+
+          sharedPreferences.setString(Constants.CUSTOMER_NAME, customerName);
 
           isEditable = false;
         });

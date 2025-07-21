@@ -166,7 +166,7 @@ class _HistoryItemState extends State<HistoryItem> {
                                         strokeWidth: 4,
                                       ),
                                     ) : Container(
-                                      margin: EdgeInsets.only(left: 30),
+                                      margin: EdgeInsets.only(left: 5),
                                       child: ElevatedButton(
                                         onPressed: () {
                                           deleteVehicle(widget.vehicleNo);

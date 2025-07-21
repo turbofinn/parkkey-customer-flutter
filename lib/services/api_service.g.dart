@@ -191,6 +191,34 @@ class _ApiService implements ApiService {
   }
 
   @override
+  Future<ParkedVehicleHistoryResponse> getCustomerParkingHistory(
+      String userID) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'userID': userID};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ParkedVehicleHistoryResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/customer-flow-handler/get-customer-parking-history',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = ParkedVehicleHistoryResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CustomerDetailsResponse> getCustomerDetails(String userID) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'userID': userID};

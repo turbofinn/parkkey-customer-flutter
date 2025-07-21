@@ -36,7 +36,7 @@ class _MyQrState extends State<MyQr> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async{
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen(index: 0,path: '/',)));
         return false;
       },
       child: SafeArea(
@@ -109,7 +109,7 @@ class _MyQrState extends State<MyQr> {
                                   borderRadius: BorderRadius.circular(10)),
                               child: GestureDetector(
                                 onTap: (){
-                                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+                                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen(index: 0,path: '/',)));
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),

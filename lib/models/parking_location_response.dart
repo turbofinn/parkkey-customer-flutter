@@ -6,16 +6,25 @@ part 'parking_location_response.g.dart';
 @JsonSerializable()
 class ParkingLocationResponse {
   @JsonKey(name: 'parkingSpaceID')
-  final String parkingSpaceID;
+  final String? parkingSpaceID;
 
   @JsonKey(name: 'parkingSpaceName')
-  final String parkingSpaceName;
+  final String? parkingSpaceName;
 
   @JsonKey(name: 'latitude')
-  final String latitude;
+  final String? latitude;
 
   @JsonKey(name: 'longitude')
-  final String longitude;
+  final String? longitude;
+
+  @JsonKey(name: 'location')
+  final String? location;
+
+  @JsonKey(name: 'parkingSpaceStatus')
+  final String? parkingSpaceStatus;
+
+  @JsonKey(name: 'address')
+  final String? address;
 
   @JsonKey(
     name: 'parkingImages',
@@ -24,12 +33,14 @@ class ParkingLocationResponse {
   )
   final List<String> parkingImages; // Change type to List<String>
 
-  ParkingLocationResponse(
-    this.parkingSpaceID,
-    this.parkingSpaceName,
-    this.latitude,
-    this.longitude,
-    this.parkingImages,
+  ParkingLocationResponse(this.parkingImages,
+  {this.parkingSpaceID,
+  this.parkingSpaceName,
+  this.latitude,
+  this.longitude,
+  this.location,
+  this.parkingSpaceStatus,
+  this.address}
   );
 
   factory ParkingLocationResponse.fromJson(Map<String, dynamic> json) =>

@@ -382,7 +382,7 @@ class _LoginScreenState extends State<LoginScreen> {
           sharedPreferences.setString(Constants.VEHICLE_NO, defaultVehicleNo);
           sharedPreferences.setString(Constants.VEHICLE_TYPE, defaultVehicleType);
 
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(index: 0,path: '/',)));
 
         }
 

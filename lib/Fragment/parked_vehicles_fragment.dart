@@ -85,8 +85,8 @@ class _ParkedFragmentState extends State<ParkedFragment> {
                             item.vehicleNo,
                             item.vehicleType,
                             item.parkingLocation!,
-                            item.parkingDateTime!.substring(0, 10),
                             item.parkingDateTime!.substring(11, 16),
+                            item.parkingDateTime!.substring(0, 10),
                             item.parkingDuration!,false,getVehicleHistory),
                       );
                     },
@@ -144,9 +144,8 @@ class _ParkedFragmentState extends State<ParkedFragment> {
 
       print(response.toString());
 
-      print('response' +
-          response.customerVehicleList.elementAt(2).vehicleType.toString());
     } on DioException catch (e) {
+      print(e);
       if (e.response?.statusCode == 400) {
         String errorMessage = e.response?.data['message'];
         print("errorMessage---" + errorMessage.toString());
