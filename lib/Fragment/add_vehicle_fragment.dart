@@ -44,7 +44,6 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
 
   @override
   Widget build(BuildContext context) {
-    double heightParent = MediaQuery.of(context).size.height;
     double widthParent = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
@@ -56,372 +55,256 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
           child: Material(
         child: ListView(
           children: [
-            Stack(children: [
-              Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
-                    height: heightParent * 0.2,
-                    width: widthParent * 0.99,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(CustomColors.PURPLE_LIGHT),
-                          Color(CustomColors.PURPLE_DARK)
-                        ],
-                      ),
-                    ),
-                  )),
-              Padding(
-                padding: const EdgeInsets.all(35),
-                child: Column(
-                  children: [
-                    Text(
-                      'Park your ride: Car, Bike, Cycle!',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 28),
-                          height: heightParent * 0.08,
-                          width: widthParent * 0.18,
-                          decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(20.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 2,
-                                    spreadRadius: 1,
-                                    color: Colors.grey.withOpacity(0.5))
-                              ]),
-                          child: Image.asset('assets/Icons/car (1).png'),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 28),
-                          height: heightParent * 0.08,
-                          width: widthParent * 0.18,
-                          decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(20.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 2,
-                                    spreadRadius: 1,
-                                    color: Colors.grey.withOpacity(0.5))
-                              ]),
-                          child: Image.asset('assets/Icons/motorcycle.png'),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 28),
-                          height: heightParent * 0.08,
-                          width: widthParent * 0.18,
-                          decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(20.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 2,
-                                    spreadRadius: 1,
-                                    color: Colors.grey.withOpacity(0.5))
-                              ]),
-                          child: Image.asset('assets/Icons/bicycle.png'),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 28),
-                          height: heightParent * 0.08,
-                          width: widthParent * 0.18,
-                          decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(20.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 2,
-                                    spreadRadius: 1,
-                                    color: Colors.grey.withOpacity(0.5))
-                              ]),
-                          child: Image.asset('assets/Icons/excavator.png'),
-                        ),
-                      ],
-                    ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: [
-                    //     Text('Car',
-                    //         style: TextStyle(
-                    //             color: Colors.white,
-                    //             fontSize: 14,
-                    //             fontWeight: FontWeight.bold)),
-                    //     Text('Bicke',
-                    //         style: TextStyle(
-                    //             color: Colors.white,
-                    //             fontSize: 14,
-                    //             fontWeight: FontWeight.bold)),
-                    //     Text('Bicycle',
-                    //         style: TextStyle(
-                    //             color: Colors.white,
-                    //             fontSize: 14,
-                    //             fontWeight: FontWeight.bold)),
-                    //     Text('Heavy Vehicle',
-                    //         style: TextStyle(
-                    //             color: Colors.white,
-                    //             fontSize: 14,
-                    //             fontWeight: FontWeight.bold)),
-                    //   ],
-                    // )
-                  ],
-                ),
-              )
-              // Column(
-              //   children: [
-              //     ClipPath(
-              //       clipper: LoginDoneClipper1(),
-              //       child: Container(
-              //         height: 150,
-              //         width: MediaQuery.of(context).size.width,
-              //         decoration: BoxDecoration(
-              //             gradient: LinearGradient(
-              //           begin: Alignment.topLeft,
-              //           end: Alignment.bottomCenter,
-              //           colors: [
-              //             Color(CustomColors.PURPLE_LIGHT),
-              //             Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
-              //           ],
-              //         )),
-              //       ),
-              //     ),
-              //     ClipPath(
-              //       clipper: LoginScreenClipper2(),
-              //       child: Container(
-              //         height: MediaQuery.of(context).size.height - 150,
-              //         width: MediaQuery.of(context).size.width,
-              //         decoration: BoxDecoration(
-              //             gradient: LinearGradient(
-              //           begin: Alignment.centerLeft,
-              //           end: Alignment.bottomCenter,
-              //           colors: [
-              //             Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
-              //             Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
-              //           ],
-              //         )),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              // Container(
-              //   decoration: BoxDecoration(
-              //     color: Colors.transparent,
-              //     borderRadius: BorderRadius.circular(20.0),
-              //   ),
-              //   child: BackdropFilter(
-              //     filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              //     child: Container(
-              //       color: Colors.transparent,
-              //     ),
-              //   ),
-              // ),
-            ]),
-            Column(
+            Stack(
               children: [
-                BackTopTitle('assets/images/arrow_back.png', Colors.black,
-                    'Add Vehicle', ''),
-                Container(
-                  margin: EdgeInsets.only(left: 20),
-                  alignment: Alignment.topLeft,
-                  child: Text('My Vehicles'),
-                ),
-                isLoadingList
-                    ? Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                  color: Color(CustomColors.GREEN_BUTTON),
-                                  width: 2),
-                              borderRadius: BorderRadius.circular(20)),
-                          height: 270,
-                          width: widthParent * 0.9,
-                          child: errorMessage != ""
-                              ? Center(
-                                  child: Container(
-                                    child: Text(errorMessage),
-                                  ),
-                                )
-                              : SizedBox(
-                                  child: Transform.scale(
-                                    scale: 0.2,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Color(CustomColors.GREEN_BUTTON)),
-                                      strokeWidth: 25,
-                                    ),
-                                  ),
-                                ),
-                        ),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                  color: Color(CustomColors.GREEN_BUTTON),
-                                  width: 2),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              // Disable scrolling
-                              shrinkWrap: true,
-                              // Adapt size to content
-                              itemCount: customerVehicleResponseList.length,
-                              itemBuilder: (context, index) {
-                                final item = customerVehicleResponseList[index];
-                                return HistoryItem(
-                                    item.customerName ?? "",
-                                    item.vehicleNo,
-                                    item.vehicleType,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    true,
-                                    getVehicleHistory,
-                                    null);
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  margin: EdgeInsets.only(left: 30),
-                  child: Text('Add New Vehicle'),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 30, top: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 32),
-                        child: Text(
-                          'Vehicle No: ',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                width: 1.5),
-                            borderRadius: BorderRadius.circular(10)),
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            controller: vehicleNumberInputController,
-                            maxLength: 10,
-                            inputFormatters: [UpperCaseTextFormatter()],
-                            style: TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Enter Vehicle Number',
-                                isCollapsed: true,
-                                counterText: ''),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 30, top: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 15),
-                        child: Text(
-                          'Vehicle Type: ',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                width: 1.5),
-                            borderRadius: BorderRadius.circular(10)),
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 12),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: vehicleType,
-                            hint: Text('Select Vehicle Type'),
-                            items: _items.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                vehicleType = newValue;
-                              });
-                            },
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                isSaving
-                    ? Container(
-                        margin: EdgeInsets.only(top: 50),
-                        width: 30,
-                        height: 30,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(CustomColors.GREEN_BUTTON)),
-                          strokeWidth: 4,
-                        ),
-                      )
-                    : Container(
-                        margin: EdgeInsets.only(top: 20),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            addVehicle(vehicleNumberInputController.text,
-                                vehicleType!);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10, bottom: 10, left: 50, right: 50),
+                // Column(
+                //   children: [
+                //     ClipPath(
+                //       clipper: LoginDoneClipper1(),
+                //       child: Container(
+                //         height: 150,
+                //         width: MediaQuery.of(context).size.width,
+                //         decoration: BoxDecoration(
+                //             gradient: LinearGradient(
+                //           begin: Alignment.topLeft,
+                //           end: Alignment.bottomCenter,
+                //           colors: [
+                //             Color(CustomColors.PURPLE_LIGHT),
+                //             Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
+                //           ],
+                //         )),
+                //       ),
+                //     ),
+                //     ClipPath(
+                //       clipper: LoginScreenClipper2(),
+                //       child: Container(
+                //         height: MediaQuery.of(context).size.height - 150,
+                //         width: MediaQuery.of(context).size.width,
+                //         decoration: BoxDecoration(
+                //             gradient: LinearGradient(
+                //           begin: Alignment.centerLeft,
+                //           end: Alignment.bottomCenter,
+                //           colors: [
+                //             Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
+                //             Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
+                //           ],
+                //         )),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // Container(
+                //   decoration: BoxDecoration(
+                //     color: Colors.transparent,
+                //     borderRadius: BorderRadius.circular(20.0),
+                //   ),
+                //   child: BackdropFilter(
+                //     filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                //     child: Container(
+                //       color: Colors.transparent,
+                //     ),
+                //   ),
+                // ),
+                Column(
+                  children: [
+                    BackTopTitle('assets/images/arrow_back.png', Colors.black,
+                        'Add Vehicle', ''),
+                    Container(
+                      margin: EdgeInsets.only(left: 20),
+                      alignment: Alignment.topLeft,
+                      child: Text('My Vehicles'),
+                    ),
+                    isLoadingList
+                        ? Center(
                             child: Container(
-                              child: Text(
-                                'Save',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: Color(CustomColors.GREEN_BUTTON),
+                                      width: 2),
+                                  borderRadius: BorderRadius.circular(20)),
+                              height: 270,
+                              width: widthParent * 0.9,
+                              child: errorMessage != ""
+                                  ? Center(
+                                      child: Container(
+                                        child: Text(errorMessage),
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      child: Transform.scale(
+                                        scale: 0.2,
+                                        child: CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<
+                                                  Color>(
+                                              Color(CustomColors.GREEN_BUTTON)),
+                                          strokeWidth: 25,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: Color(CustomColors.GREEN_BUTTON),
+                                      width: 2),
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  // Disable scrolling
+                                  shrinkWrap: true,
+                                  // Adapt size to content
+                                  itemCount: customerVehicleResponseList.length,
+                                  itemBuilder: (context, index) {
+                                    final item =
+                                        customerVehicleResponseList[index];
+                                    return HistoryItem(
+                                        item.customerName ?? "",
+                                        item.vehicleNo,
+                                        item.vehicleType,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        true,
+                                        getVehicleHistory,
+                                        null);
+                                  },
+                                ),
                               ),
                             ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(CustomColors.GREEN_BUTTON),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  20.0), // Set border radius
+                    Container(
+                      alignment: Alignment.topLeft,
+                      margin: EdgeInsets.only(left: 30),
+                      child: Text('Add New Vehicle'),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 30, top: 30),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 32),
+                            child: Text(
+                              'Vehicle No: ',
+                              style: TextStyle(fontSize: 14),
                             ),
                           ),
-                        ),
-                      )
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color(CustomColors.GREEN_BUTTON),
+                                    width: 1.5),
+                                borderRadius: BorderRadius.circular(10)),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                controller: vehicleNumberInputController,
+                                maxLength: 10,
+                                inputFormatters: [UpperCaseTextFormatter()],
+                                style: TextStyle(fontSize: 18),
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Enter Vehicle Number',
+                                    isCollapsed: true,
+                                    counterText: ''),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 30, top: 30),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 15),
+                            child: Text(
+                              'Vehicle Type: ',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color(CustomColors.GREEN_BUTTON),
+                                    width: 1.5),
+                                borderRadius: BorderRadius.circular(10)),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                value: vehicleType,
+                                hint: Text('Select Vehicle Type'),
+                                items: _items.map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    vehicleType = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    isSaving
+                        ? Container(
+                            margin: EdgeInsets.only(top: 50),
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(CustomColors.GREEN_BUTTON)),
+                              strokeWidth: 4,
+                            ),
+                          )
+                        : Container(
+                            margin: EdgeInsets.only(top: 20),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                addVehicle(vehicleNumberInputController.text,
+                                    vehicleType!);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 10, bottom: 10, left: 50, right: 50),
+                                child: Container(
+                                  child: Text(
+                                    'Save',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 18),
+                                  ),
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color(CustomColors.GREEN_BUTTON),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      20.0), // Set border radius
+                                ),
+                              ),
+                            ),
+                          )
+                  ],
+                )
               ],
             )
           ],
