@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:parkey_customer/Clippers/edit_profile_clipper.dart';
 import 'package:parkey_customer/models/update_customer_details_request.dart';
 import 'package:parkey_customer/screens/login_screen.dart';
@@ -19,7 +20,7 @@ import '../utils/auth_interceptor.dart';
 
 class ProfileFragment extends StatefulWidget {
   BuildContext context;
-  ProfileFragment({required this.context,super.key});
+  ProfileFragment({required this.context, super.key});
 
   @override
   State<ProfileFragment> createState() => _ProfileFragmentState();
@@ -48,439 +49,272 @@ class _ProfileFragmentState extends State<ProfileFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Material(
-      child: ListView(
-        children: [
-          Stack(
+    double Screenheight = MediaQuery.of(context).size.height;
+    double Screenwidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //       onPressed: () {},
+      //       icon: Padding(
+      //         padding: const EdgeInsets.all(8.0),
+      //         child: Icon(
+      //           Iconsax.arrow_left,
+      //           size: 31,
+      //           weight: 20.0,
+      //         ),
+      //       )),
+      //   title: Text(
+      //     'Profile',
+      //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+      //   ),
+      //   centerTitle: true,
+      // ),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ClipPath(
-                    clipper: LoginDoneClipper1(),
-                    child: Container(
-                      height: 150,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(CustomColors.PURPLE_LIGHT),
-                          Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
-                        ],
-                      )),
-                    ),
-                  ),
-                  ClipPath(
-                    clipper: LoginScreenClipper2(),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height - 150,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
-                          Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
-                        ],
-                      )),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Container(
-                    color: Colors.transparent,
-                  ),
-                ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  children: [
-                    ClipPath(
-                      clipper: EditProfileClipper(),
-                      child: Container(
-                        color: Colors.black.withOpacity(0.1),
-                        child: Column(
-                          children: [
-                            Center(
-                              child: Container(
-                                margin: EdgeInsets.only(top: 18, bottom: 18),
-                                child: Text(
-                                  'Profile',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                            Stack(
-                              children: [
-                                Container(
-                                  width: 150,
-                                  height: 150,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(80),
-                                      border: Border.all(
-                                          color:
-                                              Color(CustomColors.GREEN_BUTTON),
-                                          width: 5)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Image(
-                                      fit: BoxFit.fill,
-                                      image: AssetImage(
-                                          'assets/images/avatar.png'),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                    right: 10,
-                                    bottom: 10,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          border: Border.all(
-                                              color: Color(
-                                                  CustomColors.GREEN_BUTTON),
-                                              width: 1)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Image(
-                                          image: AssetImage(
-                                              'assets/images/edit_profile.png'),
-                                        ),
-                                      ),
-                                    )),
-                              ],
-                            ),
-                            Visibility(
-                              visible: !isEditable,
-                              child: Container(
-                                margin: EdgeInsets.only(top: 20),
-                                child: Text(
-                                  customerName,
-                                  style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: !isEditable,
-                              child: Container(
-                                margin: EdgeInsets.only(bottom: 40),
-                                child: Text(
-                                  '+91' + mobileNo,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: !isEditable,
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isEditable = true;
-                              });
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 50, top: 30),
-                              child: Row(
-                                children: [
-                                  Image(
-                                      image: AssetImage(
-                                          'assets/images/edit_profile_person.png')),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 30),
-                                    child: Text(
-                                      'Edit Profile',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(widget.context).push(MaterialPageRoute(builder: (context) => HomeScreen(index: -1,path: '/AddVehicle',)));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 50, top: 20),
-                              child: Row(
-                                children: [
-                                  Image(
-                                      image: AssetImage(
-                                          'assets/images/edit_profile_car.png')),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 30),
-                                    child: Text(
-                                      'Update Vehicle',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 50, top: 20),
-                            child: Row(
-                              children: [
-                                Image(
-                                    image: AssetImage(
-                                        'assets/images/edit_profile_bell.png')),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 30),
-                                  child: Text(
-                                    'Notification',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 50, top: 20),
-                            child: Row(
-                              children: [
-                                Image(
-                                    image: AssetImage(
-                                        'assets/images/edit_profile_help.png')),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 30),
-                                  child: Text(
-                                    'Help',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              SharedPreferences sharedPrefernces = await SharedPreferences.getInstance();
-                              sharedPrefernces.clear();
-                              Navigator.pushReplacement(widget.context, MaterialPageRoute(builder: (context) => LoginScreen()));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 50, top: 20),
-                              child: Row(
-                                children: [
-                                  Image(
-                                      image: AssetImage(
-                                          'assets/images/edit_profile_logout.png')),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 30),
-                                    child: Text(
-                                      'Logout',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Visibility(
-                visible: isEditable,
+              ClipPath(
+                clipper: TopCurveClipper(),
                 child: Container(
-                  margin: EdgeInsets.only(top: 270),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              child: Text(
-                                'Name: ',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Color(CustomColors.GREEN_BUTTON),
-                                      width: 1.5),
-                                  borderRadius: BorderRadius.circular(10)),
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: customerNameInputController,
-                                  style: TextStyle(fontSize: 12),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Enter Name',
-                                    isCollapsed: true,
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              child: Text(
-                                'Gender: ',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Color(CustomColors.GREEN_BUTTON),
-                                      width: 1.5),
-                                  borderRadius: BorderRadius.circular(10)),
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: genderInputController,
-                                  style: TextStyle(fontSize: 12),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Enter Gender',
-                                    isCollapsed: true,
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              child: Text(
-                                'Email: ',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Color(CustomColors.GREEN_BUTTON),
-                                      width: 1.5),
-                                  borderRadius: BorderRadius.circular(10)),
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: emailIDInputController,
-                                  style: TextStyle(fontSize: 12),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Enter Email',
-                                    isCollapsed: true,
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      isLoading
-                          ? Container(
-                              margin: EdgeInsets.only(top: 50),
-                              width: 30,
-                              height: 30,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(CustomColors.GREEN_BUTTON)),
-                                strokeWidth: 4,
-                              ),
-                            )
-                          : Container(
-                              margin: EdgeInsets.only(top: 20),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  updateCustomerDetails();
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10, bottom: 10, left: 50, right: 50),
-                                  child: Container(
-                                    child: Text(
-                                      'Save',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18),
-                                    ),
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color(CustomColors.GREEN_BUTTON),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        20.0), // Set border radius
-                                  ),
-                                ),
-                              ),
-                            )
-                    ],
-                  ),
+                  height: Screenheight * 0.3, // Only top part is curved
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                        Color(CustomColors.PURPLE_LIGHT),
+                        Color(CustomColors.PURPLE_DARK),
+                      ])),
+                  // color: Color(
+                  //     CustomColors.PURPLE_LIGHT), // Purple color like the image
                 ),
               ),
-              Container(
-                height: MediaQuery.of(context).size.height,
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text('Version 1.0245'),
-                ),
+              Column(
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: Color(CustomColors.GREEN_DARK), width: 3)),
+                    margin: EdgeInsets.only(top: Screenheight * 0.03),
+                    padding: EdgeInsets.all(5),
+                    child: CircleAvatar(
+                      backgroundImage: AssetImage('assets/images/avatar.png'),
+                      backgroundColor: Colors.transparent,
+                      radius: 50,
+                    ),
+                  ),
+                  Text(
+                    '+91' + mobileNo,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: TextButton(
+                        onPressed: () {},
+                        child: Text('Update Image',
+                            style: TextStyle(
+                                color: Color(CustomColors.GREEN_DARK),
+                                fontSize: 16))),
+                  ),
+                  SizedBox(
+                    height: Screenheight * 0.05,
+                  ),
+                  Divider(
+                    indent: 19,
+                    endIndent: 19,
+                    thickness: 2,
+                    height: Screenheight * 0.03,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Account settings',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ),
+                  ),
+                  SizedBox(
+                    height: Screenheight * 0.02,
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(15),
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: Offset(0, 3), // changes position of shadow
+                          )
+                        ]),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          tileColor:
+                              Color(CustomColors.PURPLE_LIGHT).withOpacity(0.6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          leading: Icon(
+                            Iconsax.user_cirlce_add,
+                            size: 25,
+                            weight: 200,
+                            color: Color(CustomColors.GREEN_DARK),
+                          ),
+                          title: Text('Edit Profile',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                // color: Color(CustomColors.GREEN_DARK)
+                              )),
+                          subtitle: Text('Change your name,mail'),
+                          trailing: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isEditable = true;
+                                });
+                              },
+                              icon: Icon(Icons.arrow_forward_ios)),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        ListTile(
+                          tileColor:
+                              Color(CustomColors.PURPLE_LIGHT).withOpacity(0.6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          leading: Icon(
+                            Iconsax.car,
+                            size: 25,
+                            weight: 200,
+                            color: Color(CustomColors.GREEN_DARK),
+                          ),
+                          title: Text('Update Vehicle',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                // color: Color(CustomColors.GREEN_DARK)
+                              )),
+                          subtitle: Text('Modify your vehicle details'),
+                          trailing: IconButton(
+                              onPressed: () {
+                                Navigator.of(widget.context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) => HomeScreen(
+                                              index: -1,
+                                              path: '/AddVehicle',
+                                            )));
+                              },
+                              icon: Icon(Icons.arrow_forward_ios)),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        ListTile(
+                          tileColor:
+                              Color(CustomColors.PURPLE_LIGHT).withOpacity(0.6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          leading: Icon(
+                            Iconsax.notification,
+                            size: 25,
+                            weight: 200,
+                            color: Color(CustomColors.GREEN_DARK),
+                          ),
+                          title: Text('Notification',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                // color: Color(CustomColors.GREEN_DARK)
+                              )),
+                          subtitle: Text('Manage your alert preferences'),
+                          trailing: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.arrow_forward_ios)),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        ListTile(
+                          tileColor:
+                              Color(CustomColors.PURPLE_LIGHT).withOpacity(0.6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          leading: Icon(
+                            Icons.help_center,
+                            size: 25,
+                            weight: 200,
+                            color: Color(CustomColors.GREEN_DARK),
+                          ),
+                          title: Text('Help',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                // color: Color(CustomColors.GREEN_DARK)
+                              )),
+                          subtitle: Text('Need help!'),
+                          trailing: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.arrow_forward_ios)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    width: 300, // set your desired width
+                    height: 50, // set your desired height
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        SharedPreferences sharedPrefernces =
+                            await SharedPreferences.getInstance();
+                        sharedPrefernces.clear();
+                        Navigator.pushReplacement(
+                            widget.context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()));
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: Color.fromARGB(255, 232, 85, 75),
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        'Log out',
+                        style: TextStyle(
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 232, 82, 72),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               )
             ],
           ),
-        ],
+        ),
       ),
-    ));
+    );
   }
 
   void fetchProfileDetails() async {
@@ -504,10 +338,12 @@ class _ProfileFragmentState extends State<ProfileFragment> {
 
         setState(() {
           if (response.customerName != null) {
-            customerName = response.customerName == null ? "" : response.customerName!;
+            customerName =
+                response.customerName == null ? "" : response.customerName!;
             mobileNo = response.mobileNo == null ? "" : response.mobileNo!;
             gender = response.gender == null ? "" : response.gender!;
-            primaryVehicle = response.primaryVehicle == null ? "" : response.primaryVehicle!;
+            primaryVehicle =
+                response.primaryVehicle == null ? "" : response.primaryVehicle!;
             emailID = response.emailID == null ? "" : response.emailID!;
           }
 
@@ -519,7 +355,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
         print('response' + (response.customerName ?? ""));
       } on DioException catch (e) {
         if (e.response?.statusCode == 400) {
-       //   String errorMessage = e.response?.data['message'];
+          //   String errorMessage = e.response?.data['message'];
           print("errorMessage---" + "errorMessage.toString()");
           // CommonUtil().showToast(errorMessage);
         } else {
@@ -592,4 +428,24 @@ class _ProfileFragmentState extends State<ProfileFragment> {
       CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
     }
   }
+}
+
+class TopCurveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.lineTo(0, size.height - 60);
+    path.quadraticBezierTo(
+      size.width / 2,
+      size.height,
+      size.width,
+      size.height - 60,
+    );
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

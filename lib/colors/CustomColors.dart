@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
-
-class CustomColors{
+class CustomColors {
   static final int PURPLE_LIGHT = 0xffEFD5FF;
   static final int PURPLE_DARK = 0xff515ADA;
   static final int GREEN_LIGHT = 0xff00FFB2;
@@ -10,4 +10,5 @@ class CustomColors{
   static final int GREY_BG = 0xffEEEEEE;
   static final int GREEN_500 = 0xff79F077;
   static final int GREY = 0xffD9D9D9;
+  static final Color Purple = Color(0xCE93D8);
 }

@@ -32,7 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isVisibleOtpTextField = false;
   final pinController = TextEditingController();
   final focusNode = FocusNode();
-  bool isOtpValid = true, isOtpEntered = false, isLoading = false,isWhatsAppAvailable = false;
+  bool isOtpValid = true,
+      isOtpEntered = false,
+      isLoading = false,
+      isWhatsAppAvailable = false;
   final apiService =
       ApiService(Dio(BaseOptions(contentType: "application/json")));
 
@@ -85,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Column(
                     children: [
-                      Image.asset('assets/images/hand.png'),
+                      Image.asset("assets/images/hand.png"),
                       Center(
                           child: Text(
                         'Verify Your Mobile Number',
@@ -183,21 +186,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                           Text('+91 '),
                                           Expanded(
                                             child: Container(
-                                              margin: EdgeInsets.only(bottom: 7),
+                                              margin:
+                                                  EdgeInsets.only(bottom: 7),
                                               child: TextField(
-                                                keyboardType: TextInputType.number,
-                                                controller: mobileNumberInputController,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                controller:
+                                                    mobileNumberInputController,
                                                 maxLength: 10,
                                                 onChanged: (text) {
                                                   if (text.length == 10) {
-                                                    FocusScope.of(context).unfocus();
+                                                    FocusScope.of(context)
+                                                        .unfocus();
                                                   }
                                                 },
                                                 decoration: InputDecoration(
-                                                    border: InputBorder.none,
-                                                    isCollapsed: true,
-                                                    counterText: '',
-                                                    ),
+                                                  border: InputBorder.none,
+                                                  isCollapsed: true,
+                                                  counterText: '',
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -214,14 +221,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Checkbox(
-                                      activeColor: Color(CustomColors.GREEN_BUTTON),
-                                        value: isWhatsAppAvailable, onChanged: (value) {
+                                        activeColor:
+                                            Color(CustomColors.GREEN_BUTTON),
+                                        value: isWhatsAppAvailable,
+                                        onChanged: (value) {
                                           setState(() {
                                             isWhatsAppAvailable = value!;
                                           });
-                                          print('checkboc--' + isWhatsAppAvailable.toString());
-                                          print('checkboc--' + value.toString());
-                                    }),
+                                          print('checkboc--' +
+                                              isWhatsAppAvailable.toString());
+                                          print(
+                                              'checkboc--' + value.toString());
+                                        }),
                                     Container(
                                         width:
                                             MediaQuery.of(context).size.width *
@@ -279,22 +290,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                       ),
-                      isVisibleOtpTextField ?
-                      GestureDetector(
-                        onTap: (){
-                          sendOtp(
-                              mobileNumberInputController.text);
-                        },
-                        child: Center(
-                          child: Container(
-                            margin: EdgeInsets.only(top: 6),
-                            child: Text('Resend OTP',
-                              style: TextStyle(
-                                fontSize: 16,),
-                          ),
-                        )
-                                            ,
-                      )) : Container()],
+                      isVisibleOtpTextField
+                          ? GestureDetector(
+                              onTap: () {
+                                sendOtp(mobileNumberInputController.text);
+                              },
+                              child: Center(
+                                child: Container(
+                                  margin: EdgeInsets.only(top: 6),
+                                  child: Text(
+                                    'Resend OTP',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ))
+                          : Container()
+                    ],
                   )
                 ],
               ),
@@ -308,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
   sendOtp(String mobileNo) async {
     print('inside click: ' + mobileNo);
 
-    if(mobileNo.length != 10){
+    if (mobileNo.length != 10) {
       CommonUtil().showToast(Constants.INVALID_PHONE_NUMBER);
       return;
     }
@@ -317,9 +330,8 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
     final SendOtpResponse sendOtpResponse =
-    await apiService.getOtp(SendOtpRequest(mobileNo,isWhatsAppAvailable));
+        await apiService.getOtp(SendOtpRequest(mobileNo, isWhatsAppAvailable));
     try {
-
       print(sendOtpResponse.message);
       if (sendOtpResponse.message == 'OTP Sent Successfully.') {
         print(sendOtpResponse.message);
@@ -342,7 +354,7 @@ class _LoginScreenState extends State<LoginScreen> {
   verifyOtp(String mobileNo, String otp) async {
     print('inside verifyotp ' + otp);
 
-    if(otp.length != 4){
+    if (otp.length != 4) {
       setState(() {
         isOtpValid = false;
       });
@@ -367,34 +379,43 @@ class _LoginScreenState extends State<LoginScreen> {
         sharedPreferences.setString(
             Constants.REFRESH_TOKEN, response.refreshToken!);
 
-        if(defaultVehicle == ""){
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => PostLoginScreen()));
-        }else{
+        if (defaultVehicle == "") {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => PostLoginScreen()));
+        } else {
           final jsonDecoded = jsonDecode(defaultVehicle);
           String defaultVehicleNo = jsonDecoded['vehicleNo'];
           String defaultVehicleType = jsonDecoded['vehicleType'];
           String defaultVehicleID = jsonDecoded['vehicleID'];
 
-          print('number-->' + defaultVehicleNo + " type-->" + defaultVehicleType + " id-->" + defaultVehicleID);
+          print('number-->' +
+              defaultVehicleNo +
+              " type-->" +
+              defaultVehicleType +
+              " id-->" +
+              defaultVehicleID);
 
           sharedPreferences.setString(Constants.VEHICLE_ID, defaultVehicleID);
           sharedPreferences.setString(Constants.VEHICLE_NO, defaultVehicleNo);
-          sharedPreferences.setString(Constants.VEHICLE_TYPE, defaultVehicleType);
+          sharedPreferences.setString(
+              Constants.VEHICLE_TYPE, defaultVehicleType);
 
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(index: 0,path: '/',)));
-
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(
+                        index: 0,
+                        path: '/',
+                      )));
         }
-
-      }
-      else{
+      } else {
         CommonUtil().showToast(response.message!);
       }
       setState(() {
         isLoading = false;
       });
     } on DioException catch (e) {
-      if(e.response?.statusCode == 400){
+      if (e.response?.statusCode == 400) {
         String errorMessage = e.response?.data['message'];
         print("errorMessage---" + errorMessage.toString());
         CommonUtil().showToast(errorMessage);
@@ -402,11 +423,9 @@ class _LoginScreenState extends State<LoginScreen> {
           isOtpValid = false;
           isLoading = false;
         });
-      }
-      else{
+      } else {
         CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
       }
-
 
       print(e.toString());
     }

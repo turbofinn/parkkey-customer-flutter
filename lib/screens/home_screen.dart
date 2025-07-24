@@ -17,7 +17,7 @@ import '../Fragment/parked_vehicles_fragment.dart';
 class HomeScreen extends StatefulWidget {
   int index;
   String path;
-  HomeScreen({required this.index, required this.path,super.key});
+  HomeScreen({required this.index, required this.path, super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -31,16 +31,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     parentHeight = MediaQuery.of(context).size.height;
-    if(widget.index == -1){
+    if (widget.index == -1) {
       _currentIndex = 4;
       widget.index = 0;
     }
     tabs = [
-      HomeFragment(context: context,),
+      HomeFragment(
+        context: context,
+      ),
       ParkedVehicleFragmentBase(),
       WalletFragment(),
       HistoryFragment(),
-      ProfileFragmentBase(context: context,path: widget.path),
+      ProfileFragmentBase(context: context, path: widget.path),
     ];
     return WillPopScope(
       onWillPop: () async {
@@ -56,9 +58,50 @@ class _HomeScreenState extends State<HomeScreen> {
               // Do nothing on horizontal swipe
             },
             child: Scaffold(
+              extendBodyBehindAppBar: true,
+              // appBar: AppBar(
+              //   toolbarHeight: 70, // Increase height of AppBar
+              //   leadingWidth: 60, // Adjust space for image
+              //   leading: Padding(
+              //     padding: const EdgeInsets.only(left: 10),
+              //     child: CircleAvatar(
+              //       backgroundColor: Colors.transparent,
+              //       // radius: 50, // Keep within 100 AppBar height
+              //       backgroundImage: AssetImage('assets/images/user.png'),
+              //     ),
+              //   ),
+
+              //   title: Padding(
+              //     padding: const EdgeInsets.only(left: 5.0),
+              //     child: Text(
+              //       "Hi there!👋",
+              //       style: TextStyle(
+              //         fontWeight: FontWeight.w500,
+              //         fontSize: 22,
+              //       ),
+              //     ),
+              //   ),
+              //   actions: [
+              //     Padding(
+              //       padding: const EdgeInsets.only(right: 8.0),
+              //       child: IconButton(
+              //           onPressed: () {},
+              //           icon: Icon(
+              //             Icons.logout,
+              //             size: 30,
+              //           )),
+              //     )
+              //   ],
+              //   backgroundColor: Colors.transparent,
+              //   shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadiusGeometry.vertical(
+              //           bottom: Radius.circular(15))),
+
+              //   //  backgroundColor: Colors.green,
+              // ),
               body: tabs[_currentIndex],
               bottomNavigationBar: SizedBox(
-                height: 0.09*parentHeight,
+                height: 0.09 * parentHeight,
                 child: BottomNavigationBar(
                   currentIndex: _currentIndex,
                   onTap: (index) {
@@ -94,8 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       index: 4,
                     ),
                   ],
-                  selectedItemColor: Color(CustomColors.GREEN_BUTTON),
-                  unselectedItemColor: Colors.black,
+                  //     selectedItemColor: Color(CustomColors.),
+                  unselectedItemColor: Colors.grey,
                   type: BottomNavigationBarType.fixed,
                   backgroundColor: Colors.white,
                   showUnselectedLabels: true,
@@ -126,7 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Image(
           width: 50,
           height: 0.03 * parentHeight,
-          image: AssetImage(iconPath),
+          image: iconPath != null && iconPath.isNotEmpty
+              ? AssetImage(iconPath)
+              : const AssetImage('assets/Icons/icon_home..png'),
         ),
       ),
       label: label,

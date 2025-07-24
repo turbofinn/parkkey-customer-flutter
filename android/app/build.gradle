@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.parkey.customer"
-    compileSdkVersion 34
+    compileSdkVersion 35
     signingConfigs {
         prod {
             keyAlias 'parkkey-customer-app'
@@ -33,11 +33,15 @@ android {
             storePassword 'Parkkey@123'
         }
     }
-    ndkVersion flutter.ndkVersion
+    ndkVersion "27.0.12077973"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    kotlinOptions {
+        jvmTarget = '21'
     }
 
     defaultConfig {
