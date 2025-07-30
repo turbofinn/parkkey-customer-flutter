@@ -24,7 +24,7 @@ class _ParkedFragmentState extends State<ParkedFragment> {
   List<CustomerVehicleResponse> customerVehicleResponseList = [];
   bool isLoadding = true;
   String errorMessage = "";
-  String ?customerName;
+  String? customerName;
 
   @override
   void initState() {
@@ -37,131 +37,178 @@ class _ParkedFragmentState extends State<ParkedFragment> {
   Widget build(BuildContext context) {
     double parentHeight = MediaQuery.of(context).size.height;
     double parentWidth = MediaQuery.of(context).size.width;
-    return SafeArea(
-        child: Material(
-      child: Column(
-        children: [
-          BackTopTitle('', Colors.black,
-              'Parked Vehicle', ''),
-          isLoadding
-              ? Center(
-                  child: Container(
-                    margin: EdgeInsets.only(top: parentHeight * 0.2),
-                    height: 300,
-                    width: 300,
-                    child: errorMessage != ""
-                        ? Center(
-                            child: Container(
-                              child: Text(errorMessage),
-                            ),
-                          )
-                        : SizedBox(
-                            child: Transform.scale(
-                              scale: 0.2,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(CustomColors.GREEN_BUTTON)),
-                                strokeWidth: 25,
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        toolbarHeight: 77,
+        leading: Container(
+            margin: EdgeInsets.only(top: 18, left: 10, bottom: 17),
+            height: 2,
+            width: 20,
+            decoration: BoxDecoration(
+                color: Color(CustomColors.PURPLE_DARK),
+                borderRadius: BorderRadius.circular(10)),
+            child: IconButton(
+                onPressed: () {
+                  // Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ))),
+        title: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Text(
+                'Parked Vehicle',
+                style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                    color: Color(CustomColors.PURPLE_DARK)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 0.01),
+              // child: Text(
+              //   'Add new Vehicle',
+              //   style: TextStyle(
+              //       fontSize: 15, color: Colors.grey.withOpacity(0.9)),
+              // ),
+            )
+          ],
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+          child: Container(
+        margin: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            isLoadding
+                ? Center(
+                    child: Container(
+                      margin: EdgeInsets.only(top: parentHeight * 0.2),
+                      height: 300,
+                      width: 300,
+                      child: errorMessage != ""
+                          ? Center(
+                              child: Container(
+                                child: Text(errorMessage),
+                              ),
+                            )
+                          : SizedBox(
+                              child: Transform.scale(
+                                scale: 0.2,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(CustomColors.GREEN_BUTTON)),
+                                  strokeWidth: 25,
+                                ),
                               ),
                             ),
-                          ),
-                  ),
-                )
-              : Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: customerVehicleResponseList.length,
-                    itemBuilder: (context, index) {
-                      final item = customerVehicleResponseList[index];
-                      return GestureDetector(
-                        onTap: () {
-                          print('item---' + item.parkingTicketID!);
-                          Navigator.of(context).pushNamed(
-                              '/DedicatedHistoryFragment',
-                              arguments: item.parkingTicketID);
-                        },
-                        child: HistoryItem(
-                            customerName == null ? "NA" : customerName!,
-                            item.vehicleNo,
-                            item.vehicleType,
-                            item.parkingLocation!,
-                            item.parkingDateTime!.substring(0, 10),
-                            item.parkingDateTime!.substring(11, 16),
-                            item.parkingDuration!,false,getVehicleHistory, null),
-                      );
-                    },
-                  ),
-                )
-        ],
-      ),
-    ));
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: customerVehicleResponseList.length,
+                      itemBuilder: (context, index) {
+                        final item = customerVehicleResponseList[index];
+                        return GestureDetector(
+                          onTap: () {
+                            print('item---' + item.parkingTicketID!);
+                            Navigator.of(context).pushNamed(
+                                '/DedicatedHistoryFragment',
+                                arguments: item.parkingTicketID);
+                          },
+                          child: HistoryItem(
+                              customerName == null ? "NA" : customerName!,
+                              item.vehicleNo,
+                              item.vehicleType,
+                              item.parkingLocation!,
+                              item.parkingDateTime!.substring(0, 10),
+                              item.parkingDateTime!.substring(11, 16),
+                              item.parkingDuration!,
+                              false,
+                              getVehicleHistory,
+                              null),
+                        );
+                      },
+                    ),
+                  )
+          ],
+        ),
+      )),
+    );
   }
 
   void getVehicleHistory() async {
     print('pvf');
-    try{
-
-
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
-    String? userID = sharedPreferences.getString(Constants.USER_ID);
-    customerName = sharedPreferences.getString(Constants.CUSTOMER_NAME);
-
-    final dio = Dio(BaseOptions(contentType: "application/json"));
-    dio.interceptors.add(AuthInterceptor(accessToken!));
-
-    final ApiService apiService = ApiService(dio);
-
     try {
-      final response = await apiService.getCustomerVehicleDetails(userID!);
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+      String? userID = sharedPreferences.getString(Constants.USER_ID);
+      customerName = sharedPreferences.getString(Constants.CUSTOMER_NAME);
 
-      List<CustomerVehicleResponse> tempList = [];
-      int len = response.customerVehicleList.length;
-      print('length--' + len.toString());
-      for (int i = 0; i < len; i++) {
-        if (response.customerVehicleList.elementAt(i).parkingLocation != null) {
-          print('location--' +
-              response.customerVehicleList.elementAt(i).parkingLocation!);
-          tempList.add(response.customerVehicleList.elementAt(i));
+      final dio = Dio(BaseOptions(contentType: "application/json"));
+      dio.interceptors.add(AuthInterceptor(accessToken!));
+
+      final ApiService apiService = ApiService(dio);
+
+      try {
+        final response = await apiService.getCustomerVehicleDetails(userID!);
+
+        List<CustomerVehicleResponse> tempList = [];
+        int len = response.customerVehicleList.length;
+        print('length--' + len.toString());
+        for (int i = 0; i < len; i++) {
+          if (response.customerVehicleList.elementAt(i).parkingLocation !=
+              null) {
+            print('location--' +
+                response.customerVehicleList.elementAt(i).parkingLocation!);
+            tempList.add(response.customerVehicleList.elementAt(i));
+          }
+        }
+
+        var json = jsonEncode(tempList);
+        print("History-->" + jsonEncode(response.customerVehicleList));
+        print('ParkedList-->' + json);
+
+        if (tempList.isEmpty) {
+          setState(() {
+            errorMessage = Constants.EMPTY_VEHICLE_LIST;
+          });
+          return;
+        }
+
+        setState(() {
+          customerVehicleResponseList = tempList;
+          isLoadding = false;
+        });
+
+        print(response.toString());
+
+        print('response' +
+            response.customerVehicleList.elementAt(2).vehicleType.toString());
+      } on DioException catch (e) {
+        if (e.response?.statusCode == 400) {
+          String errorMessage = e.response?.data['message'];
+          print("errorMessage---" + errorMessage.toString());
+          CommonUtil().showToast(errorMessage);
+          setState(() {
+            this.errorMessage = errorMessage;
+          });
+        } else {
+          CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
         }
       }
-
-      var json = jsonEncode(tempList);
-      print("History-->" + jsonEncode(response.customerVehicleList));
-      print('ParkedList-->' + json);
-
-      if (tempList.isEmpty) {
-        setState(() {
-          errorMessage = Constants.EMPTY_VEHICLE_LIST;
-        });
-        return;
-      }
-
+    } catch (e) {
       setState(() {
-        customerVehicleResponseList = tempList;
-        isLoadding = false;
+        errorMessage = Constants.GENERIC_ERROR_MESSAGE;
       });
-
-      print(response.toString());
-
-      print('response' +
-          response.customerVehicleList.elementAt(2).vehicleType.toString());
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 400) {
-        String errorMessage = e.response?.data['message'];
-        print("errorMessage---" + errorMessage.toString());
-        CommonUtil().showToast(errorMessage);
-        setState(() {
-          this.errorMessage = errorMessage;
-        });
-      } else {
-        CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
-      }
-    }
-    }catch(e){
-setState(() {
-  errorMessage = Constants.GENERIC_ERROR_MESSAGE;
-});
     }
   }
 }

@@ -112,27 +112,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   items: [
                     _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_home.png',
+                      icon: Icons.home,
+                      // iconPath: 'assets/Icons/icon_home.png',
                       label: 'Home',
                       index: 0,
                     ),
                     _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_exit.png',
+                      icon: Icons.local_parking,
+                      //iconPath: 'assets/Icons/icon_exit.png',
                       label: 'Parked Vehicles',
                       index: 1,
                     ),
                     _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_wallet.png',
+                      icon: Icons.account_balance_wallet,
+                      // iconPath: 'assets/Icons/icon_wallet.png',
                       label: 'Wallet',
                       index: 2,
                     ),
                     _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_history.png',
+                      icon: Icons.history,
+                      // iconPath: 'assets/Icons/icon_history.png',
                       label: 'History',
                       index: 3,
                     ),
                     _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_profile.png',
+                      icon: Icons.person,
+                      //   iconPath: 'assets/Icons/icon_profile.png',
                       label: 'Profile',
                       index: 4,
                     ),
@@ -153,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   BottomNavigationBarItem _buildBottomNavigationBarItem({
-    required String iconPath,
+    required IconData icon,
     required String label,
     required int index,
   }) {
@@ -161,17 +166,17 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: Container(
         decoration: BoxDecoration(
           color: _currentIndex == index
-              ? Color(CustomColors.GREEN_BUTTON)
+              ? Color(CustomColors.GREEN_BUTTON).withOpacity(0.4)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(5),
         ),
         padding: EdgeInsets.all(8),
-        child: Image(
-          width: 50,
-          height: 0.03 * parentHeight,
-          image: iconPath != null && iconPath.isNotEmpty
-              ? AssetImage(iconPath)
-              : const AssetImage('assets/Icons/icon_home..png'),
+        child: Icon(
+          icon, // <-- This will be passed as an IconData
+          size: 25,
+          color: _currentIndex == index
+              ? Color(CustomColors.GREEN_BUTTON)
+              : Colors.black54,
         ),
       ),
       label: label,

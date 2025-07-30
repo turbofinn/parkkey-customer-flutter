@@ -277,7 +277,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                     height: 20,
                   ),
                   SizedBox(
-                    width: 300, // set your desired width
+                    width: 250, // set your desired width
                     height: 50, // set your desired height
                     child: OutlinedButton(
                       onPressed: () async {
