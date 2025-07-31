@@ -21,57 +21,74 @@ import '../models/parking_location_response.dart';
 import '../models/parking_space_info_response.dart';
 import '../models/send_otp_response.dart';
 import '../models/wallet_balance_response.dart';
+//import '../models/payment_history_response.dart'; // Import for the payment history response model
 part 'api_service.g.dart';
 
-
-@RestApi(baseUrl: 'https://xkzd75f5kd.execute-api.ap-south-1.amazonaws.com/prod')
-abstract class ApiService{
+@RestApi(
+    baseUrl: 'https://xkzd75f5kd.execute-api.ap-south-1.amazonaws.com/prod')
+abstract class ApiService {
   factory ApiService(Dio dio) = _ApiService;
 
   @POST('/login-service/send-otp')
   Future<SendOtpResponse> getOtp(@Body() SendOtpRequest sendOtpRequest);
 
   @POST('/login-service/verify-otp/customer')
-  Future<VerifyOtpResponse> verifyOtp(@Body() VerifyOtpRequest verifyOtpRequest);
+  Future<VerifyOtpResponse> verifyOtp(
+      @Body() VerifyOtpRequest verifyOtpRequest);
 
   @POST('/ticket-handler/create-ticket')
-  Future<CreateTicketResponse> generateQR(@Body() CreateTicketRequest createTicketRequest);
+  Future<CreateTicketResponse> generateQR(
+      @Body() CreateTicketRequest createTicketRequest);
 
   @POST('/customer-flow-handler/update-customer-details')
-  Future<MyResponse> updateCustomerDetails(@Body() UpdateCustomerDetailsRequest updateCustomerDetailsRequest);
+  Future<MyResponse> updateCustomerDetails(
+      @Body() UpdateCustomerDetailsRequest updateCustomerDetailsRequest);
 
   @GET('/customer-flow-handler/get-vehicle-parking-history')
-  Future<ParkedVehicleHistoryResponse> getVehicleParkingHistory(@Query('vehicleID') String param1);
+  Future<ParkedVehicleHistoryResponse> getVehicleParkingHistory(
+      @Query('vehicleID') String param1);
 
   @GET('/customer-flow-handler/get-customer-vehicle-details')
-  Future<CustomerVehicleDetailsResponse> getCustomerVehicleDetails(@Query('userID') String userID);
+  Future<CustomerVehicleDetailsResponse> getCustomerVehicleDetails(
+      @Query('userID') String userID);
 
   @GET('/customer-flow-handler/get-customer-parking-history')
-  Future<ParkedVehicleResponse> getCustomerParkingHistory(@Query('userID') String userID);
+  Future<ParkedVehicleHistoryResponse> getCustomerParkingHistory(
+      @Query('userID') String userID);
 
   @GET('/customer-flow-handler/get-customer-details')
-  Future<CustomerDetailsResponse> getCustomerDetails(@Query('userID') String userID);
+  Future<CustomerDetailsResponse> getCustomerDetails(
+      @Query('userID') String userID);
 
-  @GET('/user-management/parking-space/fetch-parking-space-info/{parkingSpaceID}')
-  Future<ParkingSpaceInfoResponse> getParkingSpaceInfo(@Path('parkingSpaceID') String parkingSpaceID);
+  @GET(
+      '/user-management/parking-space/fetch-parking-space-info/{parkingSpaceID}')
+  Future<ParkingSpaceInfoResponse> getParkingSpaceInfo(
+      @Path('parkingSpaceID') String parkingSpaceID);
 
   @GET('/ticket-handler/get-ticket')
-  Future<GetTicketResponse> getTicket(@Query('parkingTicketID') String parkingTicketID);
+  Future<GetTicketResponse> getTicket(
+      @Query('parkingTicketID') String parkingTicketID);
 
   @GET('/customer-flow-handler/get-parking-space-by-city')
-  Future<List<ParkingLocationResponse>> getParkingSpaceList(@Query('city') String city);
+  Future<List<ParkingLocationResponse>> getParkingSpaceList(
+      @Query('city') String city);
 
   @POST('/customer-flow-handler/add-vehicle')
-  Future<AddVehicleResponse> addVehicle(@Body() AddVehicleRequest addVehicleRequest);
+  Future<AddVehicleResponse> addVehicle(
+      @Body() AddVehicleRequest addVehicleRequest);
 
   @GET('/customer-flow-handler/get-vehicle-details')
-  Future<VehicleDetailsResponse> getVehicleDetails(@Query('vehicleNo') String vehicleNo);
+  Future<VehicleDetailsResponse> getVehicleDetails(
+      @Query('vehicleNo') String vehicleNo);
 
   @GET('/customer-flow-handler/get-wallet-details')
-  Future<WalletBalanceResponse> getWalletDetails(@Query('userID') String userID);
+  Future<WalletBalanceResponse> getWalletDetails(
+      @Query('userID') String userID);
+
+  @POST('/customer-flow-handler/fetch-payment-history')
+  Future<dynamic> fetchPaymentHistory(@Body() Map<String, String> body);
 
   @DELETE('/customer-flow-handler/delete-vehilcle')
-  Future<DeleteVehicleResponse> deleteVehicle(@Query('vehicleNo') String vehicleNo);
-
-
+  Future<DeleteVehicleResponse> deleteVehicle(
+      @Query('vehicleNo') String vehicleNo);
 }

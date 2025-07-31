@@ -17,7 +17,11 @@ import '../Fragment/parked_vehicles_fragment.dart';
 class HomeScreen extends StatefulWidget {
   int index;
   String path;
+<<<<<<< HEAD
   HomeScreen({required this.index, required this.path, super.key});
+=======
+  HomeScreen({required this.index, required this.path,super.key});
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -31,11 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     parentHeight = MediaQuery.of(context).size.height;
+<<<<<<< HEAD
     if (widget.index == -1) {
+=======
+    if(widget.index == -1){
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
       _currentIndex = 4;
       widget.index = 0;
     }
     tabs = [
+<<<<<<< HEAD
       HomeFragment(
         context: context,
       ),
@@ -43,6 +52,13 @@ class _HomeScreenState extends State<HomeScreen> {
       WalletFragment(),
       HistoryFragment(),
       ProfileFragmentBase(context: context, path: widget.path),
+=======
+      HomeFragment(context: context,),
+      ParkedVehicleFragmentBase(),
+      WalletFragment(),
+      HistoryFragment(),
+      ProfileFragmentBase(context: context,path: widget.path),
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
     ];
     return WillPopScope(
       onWillPop: () async {
@@ -101,7 +117,11 @@ class _HomeScreenState extends State<HomeScreen> {
               // ),
               body: tabs[_currentIndex],
               bottomNavigationBar: SizedBox(
+<<<<<<< HEAD
                 height: 0.09 * parentHeight,
+=======
+                height: 0.1*parentHeight,
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
                 child: BottomNavigationBar(
                   currentIndex: _currentIndex,
                   onTap: (index) {
@@ -118,9 +138,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       index: 0,
                     ),
                     _buildBottomNavigationBarItem(
+<<<<<<< HEAD
                       icon: Icons.local_parking,
                       //iconPath: 'assets/Icons/icon_exit.png',
                       label: 'Parked Vehicles',
+=======
+                      iconPath: 'assets/Icons/icon_exit.png',
+                      label: 'Parked',
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
                       index: 1,
                     ),
                     _buildBottomNavigationBarItem(
@@ -171,12 +196,19 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(5),
         ),
         padding: EdgeInsets.all(8),
+<<<<<<< HEAD
         child: Icon(
           icon, // <-- This will be passed as an IconData
           size: 25,
           color: _currentIndex == index
               ? Color(CustomColors.GREEN_BUTTON)
               : Colors.black54,
+=======
+        child: Image(
+          width: 50,
+          height: 0.035 * parentHeight,
+          image: AssetImage(iconPath),
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
         ),
       ),
       label: label,

@@ -407,6 +407,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         index: 0,
                         path: '/',
                       )));
+
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(
+                        index: 0,
+                        path: '/',
+                      )));
         }
       } else {
         CommonUtil().showToast(response.message!);

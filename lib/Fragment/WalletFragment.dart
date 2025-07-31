@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:parkey_customer/UIComponents/back_top_title.dart';
 import 'package:parkey_customer/UIComponents/custom_alert_dialog.dart';
+import 'package:parkey_customer/models/payment_history_response.dart';
 import 'package:parkey_customer/utils/common_util.dart';
 import 'package:pinput/pinput.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -31,13 +33,16 @@ class _WalletFragmentState extends State<WalletFragment> {
   double walletBalance = 0;
   bool showPaymentSuccessDialog = false;
   bool isLoading = false;
-  String ?customerName;
+  bool isHistoryLoading = false;
+  List<PaymentHistoryResponse> paymentHistory = [];
+  String? customerName;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchWalletBalance();
+    fetchPaymentHistory();
   }
 
   @override
@@ -113,8 +118,7 @@ class _WalletFragmentState extends State<WalletFragment> {
               ),
               Column(
                 children: [
-                  BackTopTitle('',
-                      Colors.white, 'My Wallet', ''),
+                  BackTopTitle('', Colors.white, 'My Wallet', ''),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: Padding(
@@ -148,9 +152,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
-                            // Adjust the shadow color and opacity
-                            //blurRadius: 7, // Adjust the blur radius of the shadow
-                            offset: Offset(0, 3), // Offset of the shadow
+                            offset: Offset(0, 3),
                           ),
                         ],
                         borderRadius: BorderRadius.circular(10),
@@ -171,27 +173,31 @@ class _WalletFragmentState extends State<WalletFragment> {
                                 ),
                               ),
                             ),
-                            isLoading ? Container(
-                              margin: EdgeInsets.only(left: 10),
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                child: Transform.scale(
-                                  scale: 0.8,
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Color(CustomColors.GREEN_BUTTON)),
-                                    strokeWidth: 5,
+                            isLoading
+                                ? Container(
+                                    margin: EdgeInsets.only(left: 10),
+                                    alignment: Alignment.centerLeft,
+                                    child: SizedBox(
+                                      child: Transform.scale(
+                                        scale: 0.8,
+                                        child: CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<
+                                                  Color>(
+                                              Color(CustomColors.GREEN_BUTTON)),
+                                          strokeWidth: 5,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      '₹ $walletBalance /-',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ) : Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                '₹ $walletBalance /-',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -216,7 +222,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               amountInputController.setText('100');
                             },
                             child: Container(
@@ -239,7 +245,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               amountInputController.setText('200');
                             },
                             child: Container(
@@ -262,7 +268,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               amountInputController.setText('500');
                             },
                             child: Container(
@@ -348,12 +354,81 @@ class _WalletFragmentState extends State<WalletFragment> {
                         ),
                       ),
                     ),
-                  )
+                  ),
+
+                  ///<< New Section Begin here .
+                  // Payment History Section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 20),
+                        Text(
+                          'Payment History:',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        isHistoryLoading
+                            ? Center(child: CircularProgressIndicator())
+                            : paymentHistory.isEmpty
+                                ? Text('No payment history available.')
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: paymentHistory.length,
+                                    itemBuilder: (context, index) {
+                                      final transaction = paymentHistory[index];
+
+                                      final DateTime parsedDate = DateTime.parse(transaction.createdDate);
+                                      final String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
+                                      return Container(
+                margin: EdgeInsets.symmetric(vertical: 8), // Space between entries
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey, width: 1.0), // Add border
+                  borderRadius: BorderRadius.circular(8), // Rounded corners
+                  color: Colors.white, // Background color
+                ),
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  leading: Icon(Icons.payment, color: Colors.green),
+                  title: Text(
+                    "₹ ${transaction.amount}",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Date: $formattedDate"), // Updated date format
+                      Text("Location: ${transaction.parkingName}"),
+                    ],
+                  ),
+                  trailing:Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        transaction.step, // Add step above mode of payment
+                        style: TextStyle(fontSize: 12,  color:Colors.black),
+                      ),
+                      Text(
+                        transaction.modeOfPayment,
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+                );
+              },
+                                )
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                      visible: showPaymentSuccessDialog,
+                      child: showPaymentSuccessDialogFunction())
                 ],
               ),
-              Visibility(
-                  visible: showPaymentSuccessDialog,
-                  child: showPaymentSuccessDialogFunction())
             ],
           ),
         ],
@@ -361,23 +436,149 @@ class _WalletFragmentState extends State<WalletFragment> {
     ));
   }
 
-  _handlePaymentSuccess(PaymentSuccessResponse response) {
+  // Fetch Payment History
+  // void fetchPaymentHistory() async {
+  //   setState(() {
+  //     isHistoryLoading = true;
+  //   });
 
+  //   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  //   String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+  //   print("Access Token: $accessToken");
+
+  //   // Get the user ID from SharedPreferences
+  //   //String? userID = sharedPreferences.getString(Constants.USER_ID);
+  //   String? userID = "9dd661b8-9111-4a59-b364-da187481757d";
+  //   if (accessToken == null || userID == null) {
+  //     print("Access token or user ID is null.");
+  //     setState(() {
+  //       isHistoryLoading = false;
+  //     });
+  //     return;
+  //   }
+
+  //   final dio = Dio(BaseOptions(contentType: "application/json"));
+  //   dio.interceptors.add(AuthInterceptor(accessToken));
+
+  //   final apiService = ApiService(dio);
+
+  //   try {
+  //     // Send the user ID in the body
+  //     //final history = await apiService.fetchPaymentHistory({"userID": userID});
+  //     final response = await apiService.fetchPaymentHistory({"userID": userID});
+  //     print("Raw API Response: $response");
+
+  //     // Check if paymentHistoryList exists and is a list
+  //     if (response['paymentHistoryList'] == null ||
+  //         response['paymentHistoryList'] is! List) {
+  //       print("Invalid payment history format.");
+  //       setState(() {
+  //         paymentHistory = [];
+  //         isHistoryLoading = false;
+  //       });
+  //       return;
+  //     }
+
+  //     final List<dynamic> paymentHistoryList = response['paymentHistoryList'] as List;
+  //     final history = paymentHistoryList
+  //         .map((item) =>
+  //             PaymentHistoryResponse.fromJson(item as Map<String, dynamic>))
+  //         .toList();
+
+  //     setState(() {
+  //       paymentHistory = history;
+  //       isHistoryLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print("Error fetching payment history: $e");
+  //     setState(() {
+  //       isHistoryLoading = false;
+  //     });
+  //   }
+  // }
+  void fetchPaymentHistory() async {
+    setState(() {
+      isHistoryLoading = true;
+    });
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+    String? userID = sharedPreferences.getString(Constants.USER_ID);
+
+    if (accessToken == null || userID == null) {
+      print("Access token or user ID is null.");
+      setState(() {
+        isHistoryLoading = false;
+      });
+      return;
+    }
+
+    final dio = Dio(BaseOptions(contentType: "application/json"));
+    dio.interceptors.add(AuthInterceptor(accessToken));
+
+    final apiService = ApiService(dio);
+
+    try {
+      // Fetch the raw response
+      final response = await apiService.fetchPaymentHistory({"userID": userID});
+      print("Raw API Response: $response");
+
+      // Check if paymentHistoryList exists and is a list
+      if (response['paymentHistoryList'] != null &&
+          response['paymentHistoryList'] is List) {
+        // Map the list to `PaymentHistoryResponse` objects
+        final paymentHistoryList = (response['paymentHistoryList'] as List)
+            .map((item) =>
+                PaymentHistoryResponse.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        setState(() {
+          paymentHistory =
+              paymentHistoryList; // Now it's of type List<PaymentHistoryResponse>
+          isHistoryLoading = false;
+        });
+      } else {
+        print("Invalid or empty payment history list.");
+        setState(() {
+          paymentHistory = [];
+          isHistoryLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching payment history: $e");
+      setState(() {
+        isHistoryLoading = false;
+      });
+    }
+  }
+
+  // void fetchPaymentHistory() async {
+  //   setState(() {
+  //     isHistoryLoading = true;
+  //   });
+
+  //   // Simulate a delay to mimic an API call
+  //   await Future.delayed(Duration(seconds: 1));
+
+  //   setState(() {
+  //     paymentHistory = mockPaymentHistory; // Assign mock data
+  //     isHistoryLoading = false;
+  //   });
+  // }
+
+  _handlePaymentSuccess(PaymentSuccessResponse response) {
     walletBalance += amount;
     amountInputController.clear();
     amount = 0;
     setState(() {
       showPaymentSuccessDialog = true;
     });
-
   }
 
   _handlePaymentError(PaymentFailureResponse response) {
-
     print("Error-->" + response.error.toString());
 
     CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
-
   }
 
   void startPayment() async {
@@ -385,7 +586,8 @@ class _WalletFragmentState extends State<WalletFragment> {
 
     String mobileNo = sharedPreferences.getString(Constants.MOBILE_NUMBER)!;
 
-    if(amountInputController.text == "" || amountInputController.text == null){
+    if (amountInputController.text == "" ||
+        amountInputController.text == null) {
       CommonUtil().showToast('Please Enter Amount');
     }
 
@@ -399,9 +601,7 @@ class _WalletFragmentState extends State<WalletFragment> {
       'prefill': {
         'contact': mobileNo,
       },
-      'notes' : {
-        'userID' : sharedPreferences.getString(Constants.USER_ID)
-      },
+      'notes': {'userID': sharedPreferences.getString(Constants.USER_ID)},
       'theme': {
         'color': '#458274' // Change the color as needed
       }
@@ -412,7 +612,7 @@ class _WalletFragmentState extends State<WalletFragment> {
     razorpay.open(options);
   }
 
-  Widget showPaymentSuccessDialogFunction(){
+  Widget showPaymentSuccessDialogFunction() {
     return Padding(
       padding: const EdgeInsets.all(40.0),
       child: Material(
@@ -465,8 +665,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             width: 20,
                             decoration: BoxDecoration(
                                 color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
+                                borderRadius: BorderRadius.circular(20)),
                           )),
                       Positioned(
                           top: 130,
@@ -476,8 +675,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             width: 12,
                             decoration: BoxDecoration(
                                 color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
+                                borderRadius: BorderRadius.circular(20)),
                           )),
                       Positioned(
                           top: 170,
@@ -487,8 +685,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             width: 10,
                             decoration: BoxDecoration(
                                 color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
+                                borderRadius: BorderRadius.circular(20)),
                           )),
                       Positioned(
                           top: 170,
@@ -498,8 +695,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             width: 5,
                             decoration: BoxDecoration(
                                 color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
+                                borderRadius: BorderRadius.circular(20)),
                           )),
                       Positioned(
                           top: 130,
@@ -509,8 +705,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             width: 8,
                             decoration: BoxDecoration(
                                 color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
+                                borderRadius: BorderRadius.circular(20)),
                           )),
                       Positioned(
                           top: 33,
@@ -520,8 +715,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             width: 15,
                             decoration: BoxDecoration(
                                 color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
+                                borderRadius: BorderRadius.circular(20)),
                           )),
                     ],
                   ),
@@ -549,7 +743,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                             child: Text(
                               'Continue',
                               style:
-                              TextStyle(color: Colors.white, fontSize: 12),
+                                  TextStyle(color: Colors.white, fontSize: 12),
                             ),
                           ),
                         ),
@@ -578,7 +772,7 @@ class _WalletFragmentState extends State<WalletFragment> {
     });
   }
 
-  void fetchWalletBalance() async{
+  void fetchWalletBalance() async {
     setState(() {
       isLoading = true;
     });
@@ -593,16 +787,16 @@ class _WalletFragmentState extends State<WalletFragment> {
     // print('userid--'+userID!);
 
     try {
-      final response = await apiService.getWalletDetails(sharedPreferences.getString(Constants.USER_ID)!);
+      final response = await apiService
+          .getWalletDetails(sharedPreferences.getString(Constants.USER_ID)!);
 
-      if(response != null){
+      if (response != null) {
         setState(() {
           this.walletBalance = response.walletAmount;
           isLoading = false;
         });
       }
-
-    }on DioException catch (e) {
+    } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         String errorMessage = e.response?.data['message'];
         print("errorMessage---" + errorMessage.toString());
@@ -614,7 +808,5 @@ class _WalletFragmentState extends State<WalletFragment> {
         isLoading = false;
       });
     }
-
-
   }
 }

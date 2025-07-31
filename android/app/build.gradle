@@ -51,8 +51,13 @@ android {
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
         targetSdkVersion 34
+<<<<<<< HEAD
         versionCode 7
         versionName "1.0.6"
+=======
+        versionCode 8
+        versionName "1.0.5"
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
     }
 
     buildTypes {

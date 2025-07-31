@@ -65,12 +65,160 @@ class _HistoryItemState extends State<HistoryItem> {
     }
     return Material(
         child: Container(
+<<<<<<< HEAD
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
               color: Colors.grey,
+=======
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                // Adjust the shadow color and opacity
+                blurRadius: 7, // Adjust the blur radius of the shadow
+                //offset: Offset(2, 2,), // Offset of the shadow
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      child: Image(
+                        height: 50,
+                        width: 50,
+                        image: AssetImage(assetImage),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(left: 30),
+                          child: Text(
+                            widget.name,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.black.withOpacity(0.7)),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 30),
+                          child: Text(
+                            widget.vehicleNo,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: Colors.black),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 30),
+                          child: Text('Vehicle Type: ' + widget.vehicleType,style: TextStyle(fontSize: 12),),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                          isFromAddVehicle ? Visibility(
+                              visible: isFromAddVehicle,
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    isLoading ? Container(
+                                      margin: EdgeInsets.only(left: 30),
+                                      width: 30,
+                                      height: 30,
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                            Color(CustomColors.GREEN_BUTTON)),
+                                        strokeWidth: 4,
+                                      ),
+                                    ) : Container(
+                                      margin: EdgeInsets.only(left: 30),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          addVehicle(widget.vehicleNo,
+                                              widget.vehicleType);
+                                        },
+                                        child: Container(
+                                          child: Text(
+                                            'Make Default',
+                                            style: TextStyle(
+                                                color: Colors.white, fontSize: 10),
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                          Color(CustomColors.GREEN_BUTTON),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                20.0), // Set border radius
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ))
+                              : Container(),
+                          isFromAddVehicle ? Visibility(
+                              visible: isFromAddVehicle,
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    isLoadingDeletion ? Container(
+                                      margin: EdgeInsets.only(top: 50),
+                                      width: 30,
+                                      height: 30,
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                            Color(CustomColors.GREEN_BUTTON)),
+                                        strokeWidth: 4,
+                                      ),
+                                    ) : Container(
+                                      margin: EdgeInsets.only(left: 5),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          deleteVehicle(widget.vehicleNo);
+                                        },
+                                        child: Container(
+                                          child: Text(
+                                            'Delete',
+                                            style: TextStyle(
+                                                color: Colors.white, fontSize: 10),
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                          Color(CustomColors.GREEN_BUTTON),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                20.0), // Set border radius
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ))
+                              : Container(),
+                        ],)
+                      ],
+                    ),
+>>>>>>> 580d48a27b417df3b5772c6acb864a6fc88f00df
 
               // color: Colors.black.withOpacity(0.1),
               // Adjust the shadow color and opacity

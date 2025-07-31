@@ -9,6 +9,8 @@ part of 'parking_location_response.dart';
 ParkingLocationResponse _$ParkingLocationResponseFromJson(
         Map<String, dynamic> json) =>
     ParkingLocationResponse(
+      ParkingLocationResponse._decodeParkingImages(
+          json['parkingImages'] as String),
       parkingSpaceID: json['parkingSpaceID'] as String?,
       parkingSpaceName: json['parkingSpaceName'] as String?,
       latitude: json['latitude'] as String?,
@@ -28,4 +30,6 @@ Map<String, dynamic> _$ParkingLocationResponseToJson(
       'location': instance.location,
       'parkingSpaceStatus': instance.parkingSpaceStatus,
       'address': instance.address,
+      'parkingImages':
+          ParkingLocationResponse._encodeParkingImages(instance.parkingImages),
     };

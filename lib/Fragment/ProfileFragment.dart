@@ -17,6 +17,7 @@ import '../screens/home_screen.dart';
 import '../services/api_service.dart';
 import '../utils/Constants.dart';
 import '../utils/auth_interceptor.dart';
+import 'add_vehicle_fragment.dart';
 
 class ProfileFragment extends StatefulWidget {
   BuildContext context;
@@ -346,6 +347,8 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                 response.primaryVehicle == null ? "" : response.primaryVehicle!;
             emailID = response.emailID == null ? "" : response.emailID!;
           }
+
+          sharedPreferences.setString(Constants.CUSTOMER_NAME, customerName);
 
           isEditable = false;
         });
