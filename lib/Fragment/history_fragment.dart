@@ -252,10 +252,10 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                         borderRadius: BorderRadius.circular(10),
                                         boxShadow: [
                                           BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            blurRadius: 7,
-                                          ),
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              blurRadius: 7,
+                                              spreadRadius: 8),
                                         ],
                                       ),
                                       child: Container(

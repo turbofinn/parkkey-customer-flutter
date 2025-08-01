@@ -8,7 +8,10 @@ class ParkedVehicleHistoryResponse {
 
   ParkedVehicleHistoryResponse({required this.parkedVehicleHistoryList});
 
-  factory ParkedVehicleHistoryResponse.fromJson(Map<String, dynamic> json) => _$ParkedVehicleHistoryResponseFromJson(json);
+  factory ParkedVehicleHistoryResponse.fromJson(Map<String, dynamic> json) =>
+      _$ParkedVehicleHistoryResponseFromJson(json);
+
+  get customerVehicleList => null;
 
   Map<String, dynamic> toJson() => _$ParkedVehicleHistoryResponseToJson(this);
 }
@@ -58,23 +61,24 @@ class ParkingResponse {
   final String? parkingName;
 
   ParkingResponse(
-      this.customerName,
-      this.vehicleType,
-      this.vehicleNo,
-      this.parkingStatus,
-      this.parkingLocation,
-      this.mobileNo,
-      this.parkedDuration,
-      this.parkDate,
-      this.parkingSpaceNo,
-      this.parkingTicketID,
-      this.parkingCharges,
-      this.entryTime,
-      this.exitTime,
-      this.parkingName,
-      );
+    this.customerName,
+    this.vehicleType,
+    this.vehicleNo,
+    this.parkingStatus,
+    this.parkingLocation,
+    this.mobileNo,
+    this.parkedDuration,
+    this.parkDate,
+    this.parkingSpaceNo,
+    this.parkingTicketID,
+    this.parkingCharges,
+    this.entryTime,
+    this.exitTime,
+    this.parkingName,
+  );
 
-  factory ParkingResponse.fromJson(Map<String, dynamic> json) => _$ParkingResponseFromJson(json);
+  factory ParkingResponse.fromJson(Map<String, dynamic> json) =>
+      _$ParkingResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ParkingResponseToJson(this);
 }

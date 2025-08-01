@@ -71,7 +71,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                     // Navigator.pop(context);
                   },
                   icon: Icon(
-                    Iconsax.arrow_left_2,
+                    Icons.arrow_back_outlined,
                     color: Colors.white,
                   ))),
           title: Column(
@@ -184,7 +184,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                     //     width: 2),
                                     borderRadius: BorderRadius.circular(20)),
                                 height: 270,
-                                width: widthParent * 0.9,
+                                width: widthParent * 0,
                                 child: errorMessage != ""
                                     ? Center(
                                         child: Container(

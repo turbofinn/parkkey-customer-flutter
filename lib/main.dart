@@ -10,7 +10,7 @@ import 'package:parkey_customer/screens/payment_screen.dart';
 import 'package:parkey_customer/screens/post_login_screen.dart';
 import 'package:parkey_customer/screens/splash_screen.dart';
 import 'Fragment/parked_vehicles_fragment.dart';
-import 'HomeFragment.dart';
+import 'HomeFragment.dart' hide Widget;
 
 void main() {
   runApp(const MyApp());
