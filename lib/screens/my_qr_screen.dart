@@ -92,7 +92,7 @@ class _MyQrState extends State<MyQr> {
         body: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-            Color(CustomColors.PURPLE_DARK).withOpacity(0.9),
+            Color(CustomColors.PURPLE_DARK).withOpacity(0.6),
             Color(CustomColors.PURPLE_LIGHT).withOpacity(0.0)
           ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           child: ListView(

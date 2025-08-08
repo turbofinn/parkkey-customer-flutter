@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:parkey_customer/HomeFragment.dart';
 import 'package:parkey_customer/UIComponents/back_top_title.dart';
 import 'package:parkey_customer/UIComponents/history_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,7 +54,11 @@ class _ParkedFragmentState extends State<ParkedFragment> {
                 borderRadius: BorderRadius.circular(10)),
             child: IconButton(
                 onPressed: () {
-                  // Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => HomeFragment(context: context)),
+                  );
                 },
                 icon: Icon(
                   Icons.arrow_back_outlined,

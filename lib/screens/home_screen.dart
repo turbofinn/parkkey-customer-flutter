@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildBottomNavigationBarItem(
                       icon: Icons.local_parking,
                       //iconPath: 'assets/Icons/icon_exit.png',
-                      label: 'Parked Vehicles',
+                      label: 'Parked',
                       index: 1,
                     ),
                     _buildBottomNavigationBarItem(

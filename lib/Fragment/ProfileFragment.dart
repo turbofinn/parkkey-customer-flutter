@@ -53,23 +53,6 @@ class _ProfileFragmentState extends State<ProfileFragment> {
     double Screenheight = MediaQuery.of(context).size.height;
     double Screenwidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: IconButton(
-      //       onPressed: () {},
-      //       icon: Padding(
-      //         padding: const EdgeInsets.all(8.0),
-      //         child: Icon(
-      //           Iconsax.arrow_left,
-      //           size: 31,
-      //           weight: 20.0,
-      //         ),
-      //       )),
-      //   title: Text(
-      //     'Profile',
-      //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-      //   ),
-      //   centerTitle: true,
-      // ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Stack(
@@ -77,7 +60,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
               ClipPath(
                 clipper: TopCurveClipper(),
                 child: Container(
-                  height: Screenheight * 0.3, // Only top part is curved
+                  height: Screenheight * 0.33, // Only top part is curved
                   width: double.infinity,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(

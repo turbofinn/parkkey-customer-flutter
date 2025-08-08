@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:parkey_customer/Fragment/ProfileFragment.dart';
+import 'package:parkey_customer/Fragment/history.dart';
 import 'package:parkey_customer/UIComponents/back_top_title.dart';
 import 'package:parkey_customer/utils/common_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +48,9 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
 
   @override
   Widget build(BuildContext context) {
-    double widthParent = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return WillPopScope(
       onWillPop: () async {
         print('onwillpop');
@@ -68,6 +72,13 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                   borderRadius: BorderRadius.circular(10)),
               child: IconButton(
                   onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProfileFragment(
+                                context: context,
+                              )),
+                    );
                     // Navigator.pop(context);
                   },
                   icon: Icon(
@@ -183,8 +194,8 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                     //     color: Color(CustomColors.GREEN_BUTTON),
                                     //     width: 2),
                                     borderRadius: BorderRadius.circular(20)),
-                                height: 270,
-                                width: widthParent * 0,
+                                height: screenHeight * 0.2,
+                                width: screenWidth * 0.4,
                                 child: errorMessage != ""
                                     ? Center(
                                         child: Container(
@@ -218,7 +229,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                   itemBuilder: (context, index) {
                                     final item =
                                         customerVehicleResponseList[index];
-                                    return HistoryItem(
+                                    return History(
                                         item.customerName ?? "",
                                         item.vehicleNo,
                                         item.vehicleType,
@@ -250,7 +261,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: screenHeight * 0.03,
                       ),
                       Container(
                         padding: EdgeInsets.only(
@@ -273,7 +284,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                         child: Column(
                           children: [
                             Container(
-                              width: 305.0,
+                              width: screenWidth * 0.8,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10)),
@@ -325,7 +336,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                               ),
                             ),
                             SizedBox(
-                              height: 25,
+                              height: screenHeight * 0.021,
                             ),
                             Container(
                               margin: EdgeInsets.only(left: 10, right: 10),
@@ -349,7 +360,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                       width: 8,
                                     ),
                                     Container(
-                                      width: 220,
+                                      //   width: screenWidth * 0.5,
                                       child: Expanded(
                                         child: DropdownButton<String>(
                                           icon: Padding(
@@ -390,7 +401,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                     ),
                                   )
                                 : Container(
-                                    width: 250,
+                                    width: screenWidth * 0.5,
                                     margin: EdgeInsets.only(top: 20),
                                     child: ElevatedButton(
                                       onPressed: () {
@@ -426,7 +437,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: screenHeight * 0.2,
                       ),
                     ],
                   )

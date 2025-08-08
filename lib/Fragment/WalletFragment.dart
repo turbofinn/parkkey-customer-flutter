@@ -168,7 +168,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                                 child: Text(
                                   'Your Wallet Balance',
                                   style: TextStyle(
-                                      fontSize: 10,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600),
                                 ),
                               ),
@@ -210,7 +210,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                       child: Text(
                         'Recharge Your Wallet:',
                         style: TextStyle(
-                            fontSize: 10, fontWeight: FontWeight.w600),
+                            fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -239,7 +239,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                                   style: TextStyle(
                                       color: Color(CustomColors.GREEN_BUTTON),
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 10),
+                                      fontSize: 13),
                                 ),
                               ),
                             ),
@@ -262,7 +262,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                                   style: TextStyle(
                                       color: Color(CustomColors.GREEN_BUTTON),
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 10),
+                                      fontSize: 13),
                                 ),
                               ),
                             ),
@@ -285,7 +285,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                                   style: TextStyle(
                                       color: Color(CustomColors.GREEN_BUTTON),
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 10),
+                                      fontSize: 13),
                                 ),
                               ),
                             ),
@@ -301,7 +301,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                       child: Text(
                         'Amount:',
                         style: TextStyle(
-                            fontSize: 10, fontWeight: FontWeight.w600),
+                            fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -317,7 +317,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                       child: TextField(
                         controller: amountInputController,
                         style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 10),
+                            fontWeight: FontWeight.w600, fontSize: 12),
                         decoration: InputDecoration(
                             hintText: 'Enter Amount You Want To Add On Wallet',
                             isCollapsed: true,
@@ -341,12 +341,13 @@ class _WalletFragmentState extends State<WalletFragment> {
                             child: Text(
                               'Add Money',
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
+                                  TextStyle(color: Colors.white, fontSize: 15),
                             ),
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(CustomColors.GREEN_BUTTON),
+                          backgroundColor:
+                              Color(CustomColors.GREEN_BUTTON).withOpacity(0.8),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                                 10.0), // Set border radius
@@ -380,47 +381,71 @@ class _WalletFragmentState extends State<WalletFragment> {
                                     itemBuilder: (context, index) {
                                       final transaction = paymentHistory[index];
 
-                                      final DateTime parsedDate = DateTime.parse(transaction.createdDate);
-                                      final String formattedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
+                                      final DateTime parsedDate =
+                                          DateTime.parse(
+                                              transaction.createdDate);
+                                      final String formattedDate =
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(parsedDate);
                                       return Container(
-                margin: EdgeInsets.symmetric(vertical: 8), // Space between entries
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 1.0), // Add border
-                  borderRadius: BorderRadius.circular(8), // Rounded corners
-                  color: Colors.white, // Background color
-                ),
-                child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  leading: Icon(Icons.payment, color: Colors.green),
-                  title: Text(
-                    "₹ ${transaction.amount}",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Date: $formattedDate"), // Updated date format
-                      Text("Location: ${transaction.parkingName}"),
-                    ],
-                  ),
-                  trailing:Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        transaction.step, // Add step above mode of payment
-                        style: TextStyle(fontSize: 12,  color:Colors.black),
-                      ),
-                      Text(
-                        transaction.modeOfPayment,
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-                );
-              },
-                                )
+                                        margin: EdgeInsets.symmetric(
+                                            vertical:
+                                                8), // Space between entries
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.grey,
+                                              width: 1.0), // Add border
+                                          borderRadius: BorderRadius.circular(
+                                              8), // Rounded corners
+                                          color:
+                                              Colors.white, // Background color
+                                        ),
+                                        child: ListTile(
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 16),
+                                          leading: Icon(Icons.payment,
+                                              color: Colors.green),
+                                          title: Text(
+                                            "₹ ${transaction.amount}",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  "Date: $formattedDate"), // Updated date format
+                                              Text(
+                                                  "Location: ${transaction.parkingName}"),
+                                            ],
+                                          ),
+                                          trailing: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                transaction
+                                                    .step, // Add step above mode of payment
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black),
+                                              ),
+                                              Text(
+                                                transaction.modeOfPayment,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
                       ],
                     ),
                   ),

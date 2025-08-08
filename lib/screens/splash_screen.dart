@@ -23,8 +23,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
-
+class _SplashScreenState extends State<SplashScreen>
+    with WidgetsBindingObserver {
   bool _disposed = false;
   var _logoWidth = 170.0;
   var _logoHeight = 150.0;
@@ -38,14 +38,13 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
-      if(!_disposed) {
+      if (!_disposed) {
         setState(() {
           _logoHeight = 250.0;
           _logoWidth = 270.0;
         });
       }
     });
-
   }
 
   @override
@@ -69,160 +68,163 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
     WidgetsBinding.instance.removeObserver(this);
     _disposed = true;
     super.dispose();
-
   }
 
   @override
   Widget build(BuildContext context) {
-
     double heightParent = MediaQuery.of(context).size.height;
     double widthParent = MediaQuery.of(context).size.width;
 
-
     return SafeArea(
         child: Material(
-      child: Stack(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Stack(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ClipPath(
+              clipper: LoginScreenClipper1(),
+              child: Container(
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(CustomColors.PURPLE_LIGHT),
+                    Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
+                  ],
+                )),
+              ),
+            ),
+            ClipPath(
+              clipper: LoginScreenClipper2(),
+              child: Container(
+                height: heightParent - 200,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
+                    Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
+                  ],
+                )),
+              ),
+            ),
+          ],
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.transparent,
+            ),
+          ),
+        ),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ClipPath(
-                clipper: LoginScreenClipper1(),
-                child: Container(
+              Center(
+                  child: AnimatedContainer(
+                duration: Duration(seconds: 2),
+                width: _logoWidth,
+                height: _logoHeight,
+                curve: Curves.easeInOut,
+                child: Image(
                   height: 150,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(CustomColors.PURPLE_LIGHT),
-                          Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
-                        ],
-                      )),
+                  width: 150,
+                  fit: BoxFit.fill,
+                  image: AssetImage('assets/images/app_logo.png'),
                 ),
-              ),
-              ClipPath(
-                clipper: LoginScreenClipper2(),
+              )),
+              Center(
                 child: Container(
-                  height: heightParent - 200,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
-                          Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
-                        ],
-                      )),
+                  child: Text(
+                    'Parking Junction Private Limited',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 17),
+                  ),
                 ),
-              ),
+              )
             ],
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                    child: AnimatedContainer(
-                      duration: Duration(seconds: 2),
-                      width: _logoWidth,
-                      height: _logoHeight,
-                      curve: Curves.easeInOut,
-                      child: Image(
-                        height: 150,
-                        width: 150,
-                        fit: BoxFit.fill,
-                        image: AssetImage('assets/images/app_logo.png'),
-                      ),
-                    )
-                ),
-                Center(
-                  child: Container(
-                    child: Text('Parking Junction Private Limited'),
-                  ),
-                )
-              ],
-            ),
-          )
-
-        ],
-      )
-    ));
+        )
+      ],
+    )));
   }
 
-
-  void handlePermissions() async{
-
+  void handlePermissions() async {
     location.Location lcn = location.Location();
 
     PermissionStatus locationStatus = PermissionStatus.denied;
 
     locationStatus = await Permission.location.status;
     if (locationStatus.isGranted) {
-
       bool isServiceEnabled = await lcn.serviceEnabled();
-      if(!isServiceEnabled){
+      if (!isServiceEnabled) {
         isServiceEnabled = await lcn.requestService();
 
-        if(!isServiceEnabled){
+        if (!isServiceEnabled) {
           handlePermissions();
-        }
-        else{
+        } else {
           bool isLocationPermissionGranted = await _handlePermission();
-          SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+          SharedPreferences sharedPreferences =
+              await SharedPreferences.getInstance();
           print("Splash_screen");
 
-          if(sharedPreferences.getString(Constants.ACCESS_TOKEN)!=null){
+          if (sharedPreferences.getString(Constants.ACCESS_TOKEN) != null) {
             print(sharedPreferences.getString("accessToken"));
-            String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+            String? accessToken =
+                sharedPreferences.getString(Constants.ACCESS_TOKEN);
 
             Future.delayed(Duration(seconds: 4), () {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen(index: 0,path: '/',)));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (_) => HomeScreen(
+                        index: 0,
+                        path: '/',
+                      )));
             });
-
-          }
-          else{
+          } else {
             print("splashPre");
-            Future.delayed(Duration(seconds: 4),(){
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=> LoginScreen()));
+            Future.delayed(Duration(seconds: 4), () {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => LoginScreen()));
             });
-
           }
         }
-      }
-      else{
-        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      } else {
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
         print("Splash_screen");
 
-        if(sharedPreferences.getString(Constants.ACCESS_TOKEN)!=null){
+        if (sharedPreferences.getString(Constants.ACCESS_TOKEN) != null) {
           print(sharedPreferences.getString("accessToken"));
-          String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+          String? accessToken =
+              sharedPreferences.getString(Constants.ACCESS_TOKEN);
 
           Future.delayed(Duration(seconds: 4), () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen(index: 0,path: '/',)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (_) => HomeScreen(
+                      index: 0,
+                      path: '/',
+                    )));
           });
-
-        }
-        else{
+        } else {
           print("splashPre");
-          Future.delayed(Duration(seconds: 4),(){
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=> LoginScreen()));
+          Future.delayed(Duration(seconds: 4), () {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => LoginScreen()));
           });
-
         }
       }
     } else {
@@ -231,13 +233,11 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
       if (await isLocationPermissionGranted == false) {
         bool isLocationPermissionGranted = await _handlePermission();
 
-        if(isLocationPermissionGranted == false){
+        if (isLocationPermissionGranted == false) {
           showToast('Please allow location permission');
         }
       }
-
     }
-
   }
 
   void showToast(String message) {
@@ -289,7 +289,6 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
     serviceEnabled = await _geolocatorPlatform.isLocationServiceEnabled();
     print(serviceEnabled);
     if (!serviceEnabled) {
-
       showToast('Please Enable Location');
 
       return false;
@@ -297,11 +296,13 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
     try {
       Position position = await _geolocatorPlatform.getCurrentPosition();
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
       sharedPreferences.setDouble(Constants.LATITUDE, position.latitude);
       sharedPreferences.setDouble(Constants.LONGITUDE, position.longitude);
       print('Current position: ${position.latitude}, ${position.longitude}');
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks.first;
         String city = placemark.locality ?? '';
@@ -327,7 +328,4 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
     return true;
   }
-
-
 }
-

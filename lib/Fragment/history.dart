@@ -11,12 +11,12 @@ import '../utils/Constants.dart';
 import '../utils/auth_interceptor.dart';
 import '../utils/common_util.dart';
 
-class HistoryItem extends StatefulWidget {
+class History extends StatefulWidget {
   String name, vehicleNo, vehicleType;
   String? address, time, date, timer, parkingCharges;
   bool isFromAddVehicle;
   final VoidCallback getVehicleHistory;
-  HistoryItem(
+  History(
       this.name,
       this.vehicleNo,
       this.vehicleType,
@@ -30,10 +30,10 @@ class HistoryItem extends StatefulWidget {
       {super.key});
 
   @override
-  State<HistoryItem> createState() => _HistoryItemState();
+  State<History> createState() => _History();
 }
 
-class _HistoryItemState extends State<HistoryItem> {
+class _History extends State<History> {
   bool isLoading = false;
   bool isLoadingDeletion = false;
   bool isDefaultSet = false;
@@ -109,10 +109,23 @@ class _HistoryItemState extends State<HistoryItem> {
                     ),
                   ),
                 ),
+                // SizedBox(
+                //   height: 12,
+                // ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Container(
+                    //   margin: EdgeInsets.only(left: 30),
+                    //   child: Text(
+                    //     widget.name,
+                    //     style: TextStyle(
+                    //         fontWeight: FontWeight.w600,
+                    //         fontSize: 14,
+                    //         color: Colors.black.withOpacity(0.7)),
+                    //   ),
+                    // ),
                     Row(
                       children: [
                         Row(
@@ -131,8 +144,32 @@ class _HistoryItemState extends State<HistoryItem> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 7),
+                    Container(
+                      width: 80,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Color(CustomColors.PURPLE_DARK)
+                                .withOpacity(0.3),
+                            width: 1),
+                        color: Color(CustomColors.PURPLE_DARK).withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      margin: EdgeInsets.only(left: 30),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          widget.vehicleType,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
                     SizedBox(
-                      height: screenHeight * 0.01,
+                      height: 10,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -148,8 +185,8 @@ class _HistoryItemState extends State<HistoryItem> {
                                       isLoading
                                           ? Container(
                                               margin: EdgeInsets.only(left: 30),
-                                              width: 30,
-                                              height: 30,
+                                              width: screenWidth * 0.04,
+                                              height: screenHeight * 0.04,
                                               child: CircularProgressIndicator(
                                                 valueColor:
                                                     AlwaysStoppedAnimation<
@@ -160,7 +197,7 @@ class _HistoryItemState extends State<HistoryItem> {
                                               ),
                                             )
                                           : Container(
-                                              margin: EdgeInsets.only(left: 20),
+                                              margin: EdgeInsets.only(left: 10),
                                               child: isDefaultSet == false
                                                   ? OutlinedButton(
                                                       onPressed: () {
@@ -232,7 +269,7 @@ class _HistoryItemState extends State<HistoryItem> {
                                               ),
                                             )
                                           : Container(
-                                              margin: EdgeInsets.only(left: 8),
+                                              margin: EdgeInsets.only(left: 3),
                                               child: OutlinedButton(
                                                 onPressed: () {
                                                   deleteVehicle(
@@ -282,14 +319,18 @@ class _HistoryItemState extends State<HistoryItem> {
                     visible: isVisibleFullCard,
                     child: Column(
                       children: [
+                        // Divider(
+                        //   color: Colors.grey.withOpacity(0.5),
+                        //   thickness: 1,
+                        // ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(5.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                height: screenHeight * 0.049,
-                                width: screenWidth * 0.76,
+                                height: 40,
+                                width: 285,
                                 padding: EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                   color: Colors.grey.withOpacity(0.1),
@@ -302,7 +343,7 @@ class _HistoryItemState extends State<HistoryItem> {
                                           const EdgeInsets.only(right: 12.0),
                                       child: Icon(
                                         Icons.location_on,
-                                        color: Colors.red,
+                                        color: Color(CustomColors.GREEN_DARK),
                                         size: 30,
                                       ),
                                     ),
@@ -343,45 +384,44 @@ class _HistoryItemState extends State<HistoryItem> {
                 ? Visibility(
                     visible: isVisibleFullCard,
                     child: Padding(
-                        padding: const EdgeInsets.all(5.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              height: screenHeight * 0.04,
-                              width: screenWidth * 0.30,
+                              height: 40,
+                              width: 120,
                               decoration: BoxDecoration(
-                                // border: Border.all(
-                                //     color: Color(CustomColors.GREEN_DARK)
-                                //         .withOpacity(0.7),
-                                //     width: 1),
+                                border: Border.all(
+                                    color: Color(CustomColors.GREEN_DARK)
+                                        .withOpacity(0.7),
+                                    width: 1),
                                 color: Color(CustomColors.GREEN_DARK)
-                                    .withOpacity(0.05),
+                                    .withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
+                                padding: const EdgeInsets.only(
+                                    left: 25.0, top: 10.0),
                                 child: Text(
-                                  'charges:' +
-                                      (widget.parkingCharges ?? "0.00"),
-                                  textAlign: TextAlign.center,
+                                  widget.date!,
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
                                       color: Color(CustomColors.GREEN_DARK)),
                                 ),
                               ),
                             ),
                             Container(
-                              height: screenHeight * 0.04,
+                              height: 40,
                               width: 160,
                               decoration: BoxDecoration(
-                                // border: Border.all(
-                                //     color: Color(CustomColors.PURPLE_DARK)
-                                //         .withOpacity(0.7),
-                                //     width: 1),
+                                border: Border.all(
+                                    color: Color(CustomColors.PURPLE_DARK)
+                                        .withOpacity(0.7),
+                                    width: 1),
                                 color: Color(CustomColors.PURPLE_DARK)
-                                    .withOpacity(0.05),
+                                    .withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Row(
@@ -390,7 +430,6 @@ class _HistoryItemState extends State<HistoryItem> {
                                     padding: const EdgeInsets.only(left: 10.0),
                                     child: Icon(
                                       Icons.calendar_month,
-                                      size: 20,
                                       color: Color(CustomColors.PURPLE_DARK),
                                     ),
                                   ),
@@ -400,8 +439,8 @@ class _HistoryItemState extends State<HistoryItem> {
                                     child: Text(
                                       widget.time!,
                                       style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w800,
                                           color:
                                               Color(CustomColors.PURPLE_DARK)),
                                     ),
@@ -417,19 +456,19 @@ class _HistoryItemState extends State<HistoryItem> {
                 ? Visibility(
                     visible: isVisibleFullCard,
                     child: Padding(
-                      padding: const EdgeInsets.all(6.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
                           Container(
-                            height: screenHeight * 0.04,
-                            width: screenWidth * 0.3,
+                            height: 40,
+                            width: 200,
                             decoration: BoxDecoration(
-                              // border: Border.all(
-                              //   color: Color(CustomColors.GREEN_DARK)
-                              //       .withOpacity(0.7),
-                              // ),
+                              border: Border.all(
+                                color: Color(CustomColors.GREEN_DARK)
+                                    .withOpacity(0.7),
+                              ),
                               color: Color(CustomColors.GREEN_DARK)
-                                  .withOpacity(0.05),
+                                  .withOpacity(0.3),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -440,16 +479,15 @@ class _HistoryItemState extends State<HistoryItem> {
                                   ),
                                   child: Icon(
                                     Icons.lock_clock,
-                                    size: 20,
                                     color: Color(CustomColors.GREEN_DARK),
                                   ),
                                 ),
-                                SizedBox(width: 6),
+                                SizedBox(width: 10),
                                 Text(
                                   widget.timer!,
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
                                       color: Color(CustomColors.GREEN_DARK)),
                                 ),
                               ],

@@ -29,7 +29,7 @@ android {
         prod {
             keyAlias 'parkkey-customer-app'
             keyPassword 'Parkkey@123'
-            storeFile file('/Users/deependrasingh/Desktop/pppp/parkkey-jks/parkkey-customer-app')
+            storeFile file('c:/Users/baps/Downloads/parkkey-customer-app')
             storePassword 'Parkkey@123'
         }
     }
@@ -59,7 +59,9 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.prod
+             signingConfig signingConfigs.prod
+             minifyEnabled false
+             shrinkResources false
         }
     }
 }

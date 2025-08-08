@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:parkey_customer/HomeFragment.dart';
 import 'package:parkey_customer/UIComponents/back_top_title.dart';
 import 'package:parkey_customer/UIComponents/history_item.dart';
 import 'package:parkey_customer/models/parked_vehicle_response.dart';
@@ -61,6 +62,14 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                   borderRadius: BorderRadius.circular(10)),
               child: IconButton(
                   onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomeFragment(
+                                context: context,
+                              )),
+                    );
+
                     // Navigator.pop(context);
                   },
                   icon: Icon(
@@ -79,14 +88,6 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                       color: Color(CustomColors.PURPLE_DARK)),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 0.01),
-                // child: Text(
-                //   'Add new Vehicle',
-                //   style: TextStyle(
-                //       fontSize: 15, color: Colors.grey.withOpacity(0.9)),
-                // ),
-              )
             ],
           ),
           centerTitle: true,
@@ -246,7 +247,7 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                     padding: const EdgeInsets.only(
                                         top: 16, left: 8, right: 8),
                                     child: Container(
-                                      height: parentHeight * 0.33,
+                                      height: parentHeight * 0.28,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(10),
@@ -264,7 +265,7 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                             top: 15,
                                             left: 18,
                                             right: 18,
-                                            bottom: 15),
+                                            bottom: 5),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -272,8 +273,8 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                             Row(
                                               children: [
                                                 Container(
-                                                  height: 70,
-                                                  width: 70,
+                                                  height: 60,
+                                                  width: 60,
                                                   decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -298,108 +299,28 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    // Text(
-                                                    //   item.parkingName ?? "",
-                                                    //   style: TextStyle(
-                                                    //     fontWeight:
-                                                    //         FontWeight.w600,
-                                                    //     fontSize: 14,
-                                                    //     color: Colors.black
-                                                    //         .withOpacity(0.7),
-                                                    //   ),
-                                                    // ),
-                                                    Container(
-                                                      width: 180,
-                                                      height: 36,
-                                                      padding: EdgeInsets.only(
-                                                          top: 5),
-                                                      decoration: BoxDecoration(
-                                                        color: Color(CustomColors
-                                                                .GREEN_BUTTON)
-                                                            .withOpacity(0.3),
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Color(
-                                                                CustomColors
-                                                                    .GREEN_DARK)),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      ),
-                                                      child: Text(
-                                                        item.vehicleNo ?? "",
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: TextStyle(
+                                                    Text(
+                                                      item.vehicleNo ?? "",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.w700,
                                                           fontSize: 18,
-                                                          color: Color(
-                                                              CustomColors
-                                                                  .GREEN_DARK),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      width: 80,
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: Color(
-                                                                    CustomColors
-                                                                        .PURPLE_DARK)
-                                                                .withOpacity(
-                                                                    0.3),
-                                                            width: 1),
-                                                        color: Color(CustomColors
-                                                                .PURPLE_DARK)
-                                                            .withOpacity(0.7),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                      ),
-                                                      margin: EdgeInsets.only(
-                                                          top: 10),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(3.0),
-                                                        child: Text(
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          item.vehicleType ??
-                                                              "",
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w900,
-                                                              fontSize: 15,
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                      ),
+                                                          color: Colors.black),
                                                     ),
                                                   ],
                                                 ),
                                               ],
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 6),
-                                              child: Divider(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                thickness: 1.5,
-                                                height: 10,
-                                              ),
-                                            ),
-                                            SizedBox(height: 4),
+                                            SizedBox(height: 10),
                                             Row(
                                               children: [
                                                 Container(
-                                                  height: 40,
+                                                  height: parentHeight * 0.049,
                                                   padding: EdgeInsets.only(
                                                       bottom: 5, top: 5),
-                                                  width: 280,
+                                                  width: parentWidth * 0.76,
                                                   decoration: BoxDecoration(
                                                     color: Colors.grey
                                                         .withOpacity(0.1),
@@ -441,18 +362,13 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                             Container(
                                               margin: EdgeInsets.only(
                                                   top: 5, bottom: 5),
-                                              width: 220,
+                                              width: parentWidth * 0.75,
                                               decoration: BoxDecoration(
                                                 color: Color(CustomColors
                                                         .PURPLE_DARK)
-                                                    .withOpacity(0.4),
+                                                    .withOpacity(0.05),
                                                 borderRadius:
                                                     BorderRadius.circular(10),
-                                                border: Border.all(
-                                                  color: Color(
-                                                      CustomColors.PURPLE_DARK),
-                                                  width: 1.5,
-                                                ),
                                               ),
                                               child: Row(
                                                 children: [
@@ -466,14 +382,14 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                                         color: Color(
                                                             CustomColors
                                                                 .PURPLE_DARK),
-                                                        size: 22),
+                                                        size: 20),
                                                   ),
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.all(
-                                                            7.0),
+                                                            5.0),
                                                     child: Text(
-                                                      '${item.entryTime ?? ""}',
+                                                      'Entry time: ${item.entryTime ?? ""}',
                                                       style: TextStyle(
                                                         fontSize: 13,
                                                         fontWeight:
@@ -489,26 +405,22 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                             ),
                                             Container(
                                               margin: EdgeInsets.only(
-                                                  top: 5, bottom: 5),
-                                              width: 220,
+                                                  top: 1, bottom: 5),
+                                              width: parentWidth * 0.78,
+                                              height: parentHeight * 0.04,
                                               decoration: BoxDecoration(
                                                 color: Color(CustomColors
                                                         .PURPLE_DARK)
-                                                    .withOpacity(0.4),
+                                                    .withOpacity(0.05),
                                                 borderRadius:
                                                     BorderRadius.circular(10),
-                                                border: Border.all(
-                                                  color: Color(
-                                                      CustomColors.PURPLE_DARK),
-                                                  width: 1.5,
-                                                ),
                                               ),
                                               child: Row(
                                                 children: [
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.all(
-                                                            8.0),
+                                                            5.0),
                                                     child: Icon(
                                                         Icons.timer_outlined,
                                                         color: Color(
@@ -519,13 +431,13 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.all(
-                                                            7.0),
+                                                            5.0),
                                                     child: Text(
                                                       'Exit time: ${item.exitTime ?? ""}',
                                                       style: TextStyle(
-                                                        fontSize: 13,
+                                                        fontSize: 14,
                                                         fontWeight:
-                                                            FontWeight.w800,
+                                                            FontWeight.w600,
                                                         color: Color(
                                                             CustomColors
                                                                 .PURPLE_DARK),
@@ -535,7 +447,6 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                                                 ],
                                               ),
                                             ),
-                                            SizedBox(height: 8),
                                           ],
                                         ),
                                       ),

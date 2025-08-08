@@ -44,364 +44,440 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
     double parentHeight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          toolbarHeight: 77,
-          leading: Container(
-              margin: EdgeInsets.only(top: 18, left: 10, bottom: 17),
-              height: 2,
-              width: 20,
-              decoration: BoxDecoration(
-                  color: Color(CustomColors.PURPLE_DARK),
-                  borderRadius: BorderRadius.circular(10)),
-              child: IconButton(
-                  onPressed: () {
-                    // Navigator.pop(context);
-                  },
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  ))),
-          title: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(
-                  'Vehicle info',
-                  style: TextStyle(
-                      fontSize: 23,
-                      fontWeight: FontWeight.bold,
-                      color: Color(CustomColors.PURPLE_DARK)),
+        body: isLoading
+            ? Center(
+                child: Container(
+                  height: 300,
+                  width: 300,
+                  child: SizedBox(
+                    child: Transform.scale(
+                      scale: 0.2,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(CustomColors.GREEN_BUTTON)),
+                        strokeWidth: 25,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 0.01),
               )
-            ],
-          ),
-          centerTitle: true,
-        ),
-        body: Stack(
-          children: [
-            Container(
-              //    margin: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                Color(CustomColors.PURPLE_LIGHT).withOpacity(0.01),
-                Color(CustomColors.PURPLE_DARK).withOpacity(0.2)
-              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-              child: Column(
+            : Stack(
                 children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: ClipPath(
+                          clipper: LoginScreenClipper1(),
+                          child: Container(
+                            height: 150,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(CustomColors.PURPLE_LIGHT),
+                                Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
+                              ],
+                            )),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 6,
+                        child: ClipPath(
+                          clipper: LoginScreenClipper2(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height - 150,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(CustomColors.GREEN_LIGHT)
+                                    .withOpacity(0.1),
+                                Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
+                              ],
+                            )),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   Container(
-                    height: parentHeight * 0.43,
-                    width: 400,
+                    width: 200,
+                    height: 200,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(20.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          spreadRadius: 9,
-                          blurRadius: 9,
-                          offset: Offset(0, 0),
-                        ),
-                      ],
                     ),
-                    margin: EdgeInsets.only(left: 30, top: 150, right: 30),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: 40, top: 2),
-                          width: 270,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(CustomColors.PURPLE_DARK)
-                                    .withOpacity(0.5),
-                                width: 1.5),
-                            color: Color(CustomColors.PURPLE_DARK)
-                                .withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            'Name of Parker: $name',
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(CustomColors.PURPLE_DARK)),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: Container(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 30, bottom: 20),
+                        width: double.infinity,
+                        child: Center(
+                            child: Text(
+                          'Vehicle Info',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              color: Colors.black),
+                        )),
+                      ),
+                      Expanded(
+                        child: ListView(
                           children: [
-                            Container(
-                              margin: EdgeInsets.only(left: 30),
-                              padding: EdgeInsets.only(top: 2),
-                              width: 150,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.GREEN_DARK)
-                                        .withOpacity(0.5),
-                                    width: 1.5),
-                                color: Color(CustomColors.GREEN_DARK)
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Row(
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Icon(
-                                      Icons.calendar_today,
-                                      color: Color(CustomColors.GREEN_DARK),
-                                      size: 16,
+                                    padding: const EdgeInsets.only(
+                                        left: 30, right: 30, top: 50),
+                                    child: ClipPath(
+                                      clipper: DedicatedHistoryClipper1(),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Color(
+                                                    CustomColors.PURPLE_LIGHT),
+                                                Color(CustomColors.PURPLE_DARK)
+                                                    .withOpacity(0.5)
+                                              ],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                child: Image(
+                                                  height: 200,
+                                                  width: 200,
+                                                  fit: BoxFit.contain,
+                                                  image: AssetImage(
+                                                      'assets/images/logo.png'),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 12),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          child: Text(
+                                                            'Name:           ',
+                                                            style: TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          child: Text(
+                                                            name,
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          child: Text(
+                                                            'Date:',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          child: Text(
+                                                            parkDate,
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 12),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          child: Text(
+                                                            '   ParkNo:',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          child: Text(
+                                                            '   SU2560',
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 22),
+                                                          child: Text(
+                                                            '           Number:',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 8),
+                                                          child: Text(
+                                                            "               ${vehicleNo}",
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 12),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 9),
+                                                          child: Text(
+                                                            '  Duration:',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 5),
+                                                          child: Text(
+                                                            "   ${duration}",
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          child: Text(
+                                                            'Location:',
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          width: 90,
+                                                          child: Text(
+                                                            location,
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 12),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          child: Text(
+                                                            'Phone :',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          child: Text(
+                                                            phone,
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 10),
+                                                          child: Text(
+                                                            '   OTP :',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 10),
+                                                          width: 90,
+                                                          child: Text(
+                                                            "   ${otp}",
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    textAlign: TextAlign.center,
-                                    parkDate,
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(CustomColors.GREEN_DARK)),
-                                  ),
+                                  )
                                 ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 16,
-                            ),
-                            Container(
-                              // margin: EdgeInsets.only(left: 30),
-                              //padding: EdgeInsets.only(top: 2),
-                              width: 100,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.GREEN_DARK)
-                                        .withOpacity(0.5),
-                                    width: 1.5),
-                                color: Color(CustomColors.GREEN_DARK)
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 1),
-                                child: Text('otp: $otp',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(CustomColors.GREEN_DARK))),
                               ),
                             ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 13, right: 13),
-                          child: Divider(
-                            height: 30,
-                            color: Colors.grey.withOpacity(0.5),
-                            thickness: 1.5,
-                          ),
-                        ),
-                        Container(
-                          // padding: EdgeInsets.only(left: 40, top: 2),
-                          width: 270,
-                          height: 40,
-                          padding: EdgeInsets.only(top: 4),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.grey.withOpacity(0.5),
-                                width: 1.5),
-                            color: Colors.grey.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 4),
-                                child: Icon(
-                                  Icons.location_on,
-                                  color: Colors.red,
-                                  size: 25,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Text('Parking location: $location',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      //  fontWeight: FontWeight.w500,
-                                      color: Colors.black)),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(left: 30),
-                              //   padding: EdgeInsets.only(left: 20, top: 2),
-                              width: 150,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.PURPLE_DARK)
-                                        .withOpacity(0.5),
-                                    width: 1.5),
-                                color: Color(CustomColors.PURPLE_DARK)
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 7),
-                                    child: Icon(
-                                      Icons.confirmation_number_outlined,
-                                      color: Color(CustomColors.PURPLE_DARK),
-                                      size: 20,
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(vehicleNo,
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              Color(CustomColors.PURPLE_DARK))),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Container(
-                              // margin: EdgeInsets.only(left: 30),
-                              //   padding: EdgeInsets.only(left: 20, top: 2),
-                              padding: EdgeInsets.only(top: 2),
-                              width: 100,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.PURPLE_DARK)
-                                        .withOpacity(0.5),
-                                    width: 1.5),
-                                color: Color(CustomColors.PURPLE_DARK)
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Text(
-                                'SU2560',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(CustomColors.PURPLE_DARK)),
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: 270,
-                          height: 40,
-                          padding: EdgeInsets.only(top: 4),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(CustomColors.GREEN_DARK)
-                                    .withOpacity(0.5),
-                                width: 1.5),
-                            color:
-                                Color(CustomColors.GREEN_DARK).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 4,
-                              ),
-                              Icon(
-                                Icons.phone,
-                                size: 20,
-                                color: Color(CustomColors.GREEN_DARK),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                'mobile number :' + phone,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(CustomColors.GREEN_DARK)),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: 270,
-                          height: 40,
-                          padding: EdgeInsets.only(top: 4),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(CustomColors.GREEN_DARK)
-                                    .withOpacity(0.5),
-                                width: 1.5),
-                            color:
-                                Color(CustomColors.GREEN_DARK).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 4,
-                              ),
-                              Icon(
-                                Icons.lock_clock,
-                                size: 25,
-                                color: Color(CustomColors.GREEN_DARK),
-                              ),
-                              SizedBox(
-                                width: 16,
-                              ),
-                              Text(
-                                duration,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(CustomColors.GREEN_DARK)),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )
+                      )
+                    ],
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

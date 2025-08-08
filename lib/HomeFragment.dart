@@ -1581,91 +1581,89 @@ class _HomeFragmentState extends State<HomeFragment>
               ),
             ),
             Container(
-              height: 400,
+              height: 405,
               margin: EdgeInsets.only(top: 150),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    //blurRadius: 7, // Adjust the blur radius of the shadow
+                    blurRadius: 7, // Adjust the blur radius of the shadow
                     offset: Offset(0, 3), // Offset of the shadow
                   ),
                 ],
               ),
               child: Column(
                 children: [
-                  Stack(
-                    children: [
-                      Container(
-                        child: Padding(
-                            padding: EdgeInsets.all(50),
-                            child: Image(
-                              image: AssetImage('assets/images/tick.png'),
-                            )),
-                      ),
-                      Positioned(
-                          top: 40,
-                          left: 50,
-                          child: Container(
-                            height: 20,
-                            width: 20,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                      Positioned(
-                          top: 130,
-                          left: 40,
-                          child: Container(
-                            height: 12,
-                            width: 12,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                      Positioned(
-                          top: 170,
-                          left: 100,
-                          child: Container(
-                            height: 10,
-                            width: 10,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                      Positioned(
-                          top: 170,
-                          right: 70,
-                          child: Container(
-                            height: 5,
-                            width: 5,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                      Positioned(
-                          top: 130,
-                          right: 50,
-                          child: Container(
-                            height: 8,
-                            width: 8,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                      Positioned(
-                          top: 33,
-                          right: 50,
-                          child: Container(
-                            height: 15,
-                            width: 15,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                    ],
+                  Container(
+                    child: Stack(
+                      children: [
+                        Image(
+                          image: AssetImage('assets/images/Success.gif'),
+                        ),
+                        // Positioned(
+                        //     top: 40,
+                        //     left: 50,
+                        //     child: Container(
+                        //       height: 20,
+                        //       width: 20,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 130,
+                        //     left: 40,
+                        //     child: Container(
+                        //       height: 12,
+                        //       width: 12,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 170,
+                        //     left: 100,
+                        //     child: Container(
+                        //       height: 10,
+                        //       width: 10,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 170,
+                        //     right: 70,
+                        //     child: Container(
+                        //       height: 5,
+                        //       width: 5,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 130,
+                        //     right: 50,
+                        //     child: Container(
+                        //       height: 8,
+                        //       width: 8,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 33,
+                        //     right: 50,
+                        //     child: Container(
+                        //       height: 15,
+                        //       width: 15,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                      ],
+                    ),
                   ),
                   Container(
                     child: Text(
@@ -1692,6 +1690,7 @@ class _HomeFragmentState extends State<HomeFragment>
                                 style: TextStyle(color: Colors.black)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
+                              elevation: 10,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
                                     10.0), // Set border radius
@@ -1713,7 +1712,8 @@ class _HomeFragmentState extends State<HomeFragment>
                               style: TextStyle(color: Colors.white),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(CustomColors.GREEN_BUTTON),
+                              backgroundColor: Color(CustomColors.GREEN_BUTTON)
+                                  .withOpacity(0.9),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
                                     10.0), // Set border radius

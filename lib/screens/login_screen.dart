@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w500,
                                   color: Colors.black),
                             ))),
                       ),
@@ -122,18 +122,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                       controller: pinController,
                                       focusNode: focusNode,
                                       defaultPinTheme: PinTheme(
-                                        width: 40,
-                                        height: 45,
+                                        width: 50,
+                                        height: 50,
                                         textStyle: const TextStyle(
                                           fontSize: 22,
                                           color: Color(0xff000000),
                                         ),
                                         decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.5),
+                                                blurRadius: 5,
+                                                offset: Offset(0, 2))
+                                          ],
                                           color: Color(0xffffffff),
                                           borderRadius:
                                               BorderRadius.circular(12),
                                           border: isOtpValid
-                                              ? null
+                                              ? Border.all(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.5))
                                               : Border.all(
                                                   color: Color(0xffFF0000)),
                                         ),
@@ -239,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 0.4,
                                         child: Center(
                                             child: Text(
-                                                'Is This Same Number In \nWhatsapp',
+                                                'Is This Same Number In Whatsapp',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     color: Color(CustomColors
@@ -265,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               )
                             : Container(
                                 width: MediaQuery.of(context).size.width * 0.5,
-                                margin: EdgeInsets.only(top: 50),
+                                margin: EdgeInsets.only(top: 50, bottom: 10),
                                 child: ElevatedButton(
                                   onPressed: () {
                                     !isVisibleOtpTextField
@@ -276,16 +285,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                             pinController.text);
                                   },
                                   style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      minimumSize: Size(200, 40),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
                                       backgroundColor:
-                                          Color(CustomColors.GREEN_BUTTON)),
+                                          Color(CustomColors.GREEN_BUTTON)
+                                              .withOpacity(0.9)),
                                   child: isVisibleOtpTextField
                                       ? const Text('Verify',
                                           style: TextStyle(
-                                              fontSize: 12,
+                                              fontSize: 15,
                                               color: Colors.white))
                                       : const Text('Send',
                                           style: TextStyle(
-                                              fontSize: 12,
+                                              fontSize: 15,
                                               color: Colors.white)),
                                 ),
                               ),
@@ -301,8 +316,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Text(
                                     'Resend OTP',
                                     style: TextStyle(
-                                      fontSize: 16,
-                                    ),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(CustomColors.PURPLE_DARK)
+                                            .withOpacity(0.9)),
                                   ),
                                 ),
                               ))
