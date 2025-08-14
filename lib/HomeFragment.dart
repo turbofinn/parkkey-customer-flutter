@@ -1561,6 +1561,7 @@ class _HomeFragmentState extends State<HomeFragment>
   }
 
   Widget showPaymentSuccessDialogFunction() {
+    double parentheight = MediaQuery.of(context).size.height;
     return Padding(
       padding: const EdgeInsets.all(40.0),
       child: Material(
@@ -1581,7 +1582,7 @@ class _HomeFragmentState extends State<HomeFragment>
               ),
             ),
             Container(
-              height: 405,
+              height: parentheight * 0.49,
               margin: EdgeInsets.only(top: 150),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -1675,7 +1676,7 @@ class _HomeFragmentState extends State<HomeFragment>
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 20),
+                    margin: EdgeInsets.only(top: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

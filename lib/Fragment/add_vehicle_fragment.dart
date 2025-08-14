@@ -120,54 +120,6 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
             children: [
               Stack(
                 children: [
-                  // Column(
-                  //   children: [
-                  //     ClipPath(
-                  //       clipper: LoginDoneClipper1(),
-                  //       child: Container(
-                  //         height: 150,
-                  //         width: MediaQuery.of(context).size.width,
-                  //         decoration: BoxDecoration(
-                  //             gradient: LinearGradient(
-                  //           begin: Alignment.topLeft,
-                  //           end: Alignment.bottomCenter,
-                  //           colors: [
-                  //             Color(CustomColors.PURPLE_LIGHT),
-                  //             Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
-                  //           ],
-                  //         )),
-                  //       ),
-                  //     ),
-                  //     ClipPath(
-                  //       clipper: LoginScreenClipper2(),
-                  //       child: Container(
-                  //         height: MediaQuery.of(context).size.height - 150,
-                  //         width: MediaQuery.of(context).size.width,
-                  //         decoration: BoxDecoration(
-                  //             gradient: LinearGradient(
-                  //           begin: Alignment.centerLeft,
-                  //           end: Alignment.bottomCenter,
-                  //           colors: [
-                  //             Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
-                  //             Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
-                  //           ],
-                  //         )),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.transparent,
-                  //     borderRadius: BorderRadius.circular(20.0),
-                  //   ),
-                  //   child: BackdropFilter(
-                  //     filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  //     child: Container(
-                  //       color: Colors.transparent,
-                  //     ),
-                  //   ),
-                  // ),
                   Column(
                     children: [
                       Align(

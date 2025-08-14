@@ -189,7 +189,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                       children: [
                                                         Container(
                                                           child: Text(
-                                                            'Name:           ',
+                                                            'Name:',
                                                             style: TextStyle(
                                                                 fontSize: 15,
                                                                 fontWeight:
@@ -256,7 +256,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                       children: [
                                                         Container(
                                                           child: Text(
-                                                            '   ParkNo:',
+                                                            'ParkNo:',
                                                             style: TextStyle(
                                                                 fontSize: 14,
                                                                 fontWeight:
@@ -268,7 +268,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                         ),
                                                         Container(
                                                           child: Text(
-                                                            '   SU2560',
+                                                            'SU2560',
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color: Colors
@@ -287,7 +287,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               EdgeInsets.only(
                                                                   left: 22),
                                                           child: Text(
-                                                            '           Number:',
+                                                            'Number:',
                                                             style: TextStyle(
                                                                 fontSize: 14,
                                                                 fontWeight:
@@ -302,7 +302,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               EdgeInsets.only(
                                                                   left: 8),
                                                           child: Text(
-                                                            "               ${vehicleNo}",
+                                                            " ${vehicleNo}",
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color: Colors
@@ -332,7 +332,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               EdgeInsets.only(
                                                                   left: 9),
                                                           child: Text(
-                                                            '  Duration:',
+                                                            'Duration:',
                                                             style: TextStyle(
                                                                 fontSize: 14,
                                                                 fontWeight:
@@ -347,7 +347,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               EdgeInsets.only(
                                                                   left: 5),
                                                           child: Text(
-                                                            "   ${duration}",
+                                                            "${duration}",
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color: Colors
@@ -376,7 +376,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                         Container(
                                                           width: 90,
                                                           child: Text(
-                                                            location,
+                                                            "${location}",
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color: Colors
@@ -434,7 +434,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               EdgeInsets.only(
                                                                   left: 10),
                                                           child: Text(
-                                                            '   OTP :',
+                                                            'OTP :',
                                                             style: TextStyle(
                                                                 fontSize: 14,
                                                                 fontWeight:
@@ -450,7 +450,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                                   left: 10),
                                                           width: 90,
                                                           child: Text(
-                                                            "   ${otp}",
+                                                            "${otp}",
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color: Colors

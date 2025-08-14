@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:parkey_customer/Clippers/edit_profile_clipper.dart';
+import 'package:parkey_customer/Fragment/edit_profile.dart';
 import 'package:parkey_customer/models/update_customer_details_request.dart';
 import 'package:parkey_customer/screens/login_screen.dart';
 import 'package:parkey_customer/utils/common_util.dart';
@@ -24,10 +25,10 @@ class ProfileFragment extends StatefulWidget {
   ProfileFragment({required this.context, super.key});
 
   @override
-  State<ProfileFragment> createState() => _ProfileFragmentState();
+  State<ProfileFragment> createState() => ProfileFragmentState();
 }
 
-class _ProfileFragmentState extends State<ProfileFragment> {
+class ProfileFragmentState extends State<ProfileFragment> {
   @override
   void initState() {
     // TODO: implement initState
@@ -165,6 +166,10 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                               onPressed: () {
                                 setState(() {
                                   isEditable = true;
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EditProfile()));
                                 });
                               },
                               icon: Icon(Icons.arrow_forward_ios)),
