@@ -255,6 +255,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               .start,
                                                       children: [
                                                         Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 7),
                                                           child: Text(
                                                             'ParkNo:',
                                                             style: TextStyle(
@@ -267,6 +270,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                           ),
                                                         ),
                                                         Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 7),
                                                           child: Text(
                                                             'SU2560',
                                                             style: TextStyle(
@@ -285,7 +291,7 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                         Container(
                                                           margin:
                                                               EdgeInsets.only(
-                                                                  left: 22),
+                                                                  left: 10),
                                                           child: Text(
                                                             'Number:',
                                                             style: TextStyle(
@@ -362,6 +368,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               .start,
                                                       children: [
                                                         Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 8),
                                                           child: Text(
                                                             'Location:',
                                                             style: TextStyle(
@@ -374,6 +383,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                           ),
                                                         ),
                                                         Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 5),
                                                           width: 90,
                                                           child: Text(
                                                             "${location}",
@@ -402,6 +414,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               .start,
                                                       children: [
                                                         Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 10),
                                                           child: Text(
                                                             'Phone :',
                                                             style: TextStyle(
@@ -414,6 +429,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                           ),
                                                         ),
                                                         Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 10),
                                                           child: Text(
                                                             phone,
                                                             style: TextStyle(
@@ -430,9 +448,10 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                               .start,
                                                       children: [
                                                         Container(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: 10),
+                                                          // padding:
+                                                          //     EdgeInsets.only(
+                                                          //         left: 10),
+
                                                           child: Text(
                                                             'OTP :',
                                                             style: TextStyle(
@@ -445,9 +464,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment> {
                                                           ),
                                                         ),
                                                         Container(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: 10),
+                                                          // padding:
+                                                          //     EdgeInsets.only(
+                                                          //         left: 10),
                                                           width: 90,
                                                           child: Text(
                                                             "${otp}",
