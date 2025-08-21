@@ -1,0 +1,630 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:parkey_customer/Fragment/add_vehicle_fragment.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../colors/CustomColors.dart';
+import '../models/add_vehicle_request.dart';
+import '../services/api_service.dart';
+import '../utils/Constants.dart';
+import '../utils/auth_interceptor.dart';
+import '../utils/common_util.dart';
+
+class History extends StatefulWidget {
+  String name, vehicleNo, vehicleType;
+  String? address, time, date, timer, parkingCharges;
+  bool isFromAddVehicle;
+  final VoidCallback getVehicleHistory;
+  History(
+      this.name,
+      this.vehicleNo,
+      this.vehicleType,
+      this.address,
+      this.time,
+      this.date,
+      this.timer,
+      this.isFromAddVehicle,
+      this.getVehicleHistory,
+      this.parkingCharges,
+      {super.key});
+
+  @override
+  State<History> createState() => _History();
+}
+
+class _History extends State<History> {
+  bool isLoading = false;
+  bool isLoadingDeletion = false;
+  bool isDefaultSet = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfDefaultVehicleSet();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String assetImage = 'assets/Icons/';
+    bool isVisibleFullCard = false;
+    bool isFromAddVehicle = widget.isFromAddVehicle;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (widget.address != null) {
+      isVisibleFullCard = true;
+    }
+
+    if (widget.vehicleType == 'Car') {
+      assetImage += 'car.png';
+    } else if (widget.vehicleType == 'Bike') {
+      assetImage += 'bycicle.png';
+    } else if (widget.vehicleType == 'Heavy Vehicle') {
+      assetImage += 'truck.png';
+    } else {
+      assetImage += 'cycle.png';
+    }
+    return Material(
+        child: Container(
+      // margin: EdgeInsets.all(),
+      margin: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.grey,
+
+              // color: Colors.black.withOpacity(0.1),
+              // Adjust the shadow color and opacity
+              blurRadius: 12,
+              offset: Offset(2, 4)
+              // Adjust the blur radius of the shadow
+              //offset: Offset(2, 2,), // Offset of the shadow
+              ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  height: 70,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.withOpacity(0.3),
+                    // color: Color(CustomColors.GREEN_DARK).withOpacity(0.2),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(7),
+                    child: Image(
+                      height: 55,
+                      width: 55,
+                      image: AssetImage(assetImage),
+                    ),
+                  ),
+                ),
+                // SizedBox(
+                //   height: 12,
+                // ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Container(
+                    //   margin: EdgeInsets.only(left: 30),
+                    //   child: Text(
+                    //     widget.name,
+                    //     style: TextStyle(
+                    //         fontWeight: FontWeight.w600,
+                    //         fontSize: 14,
+                    //         color: Colors.black.withOpacity(0.7)),
+                    //   ),
+                    // ),
+                    Row(
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Text(
+                                widget.vehicleNo,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 20,
+                                    color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 7),
+                    Container(
+                      width: 80,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Color(CustomColors.PURPLE_DARK)
+                                .withOpacity(0.3),
+                            width: 1),
+                        color: Color(CustomColors.PURPLE_DARK).withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      margin: EdgeInsets.only(left: 30),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          widget.vehicleType,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        isFromAddVehicle
+                            ? Visibility(
+                                visible: isFromAddVehicle,
+                                child: Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      isLoading
+                                          ? Container(
+                                              margin: EdgeInsets.only(left: 30),
+                                              width: screenWidth * 0.04,
+                                              height: screenHeight * 0.04,
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
+                                                        Color(CustomColors
+                                                            .GREEN_BUTTON)),
+                                                strokeWidth: 4,
+                                              ),
+                                            )
+                                          : Container(
+                                              margin: EdgeInsets.only(left: 10),
+                                              child: isDefaultSet == false
+                                                  ? OutlinedButton(
+                                                      onPressed: () {
+                                                        addVehicle(
+                                                            widget.vehicleNo,
+                                                            widget.vehicleType);
+                                                      },
+                                                      child: Container(
+                                                        child: Text(
+                                                          'Set Default',
+                                                          style: TextStyle(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  248,
+                                                                  245,
+                                                                  245),
+                                                              fontSize: 13,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                      ),
+                                                      style: OutlinedButton
+                                                          .styleFrom(
+                                                        backgroundColor: Color(
+                                                                CustomColors
+                                                                    .GREEN_DARK)
+                                                            .withOpacity(0.7),
+                                                        side: BorderSide(
+                                                          color: Color(
+                                                              CustomColors
+                                                                  .GREEN_DARK),
+                                                        ),
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : SizedBox()),
+                                    ],
+                                  ),
+                                ))
+                            : Container(),
+                        isFromAddVehicle
+                            ? Visibility(
+                                visible: isFromAddVehicle,
+                                child: Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      isLoadingDeletion
+                                          ? Container(
+                                              margin: EdgeInsets.only(top: 50),
+                                              width: 30,
+                                              height: 30,
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
+                                                        Color(CustomColors
+                                                            .GREEN_BUTTON)),
+                                                strokeWidth: 4,
+                                              ),
+                                            )
+                                          : Container(
+                                              margin: EdgeInsets.only(left: 3),
+                                              child: OutlinedButton(
+                                                onPressed: () {
+                                                  deleteVehicle(
+                                                      widget.vehicleNo);
+                                                },
+                                                child: Container(
+                                                  child: Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 246, 243, 243),
+                                                        fontSize: 13),
+                                                  ),
+                                                ),
+                                                style: OutlinedButton.styleFrom(
+                                                  backgroundColor: Color(
+                                                          CustomColors
+                                                              .GREEN_DARK)
+                                                      .withOpacity(0.7),
+                                                  side: BorderSide(
+                                                    color: Color(CustomColors
+                                                        .GREEN_DARK),
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                    ],
+                                  ),
+                                ))
+                            : Container(),
+                      ],
+                    )
+                  ],
+                ),
+              ],
+            ),
+            isVisibleFullCard
+                ? Visibility(
+                    visible: isVisibleFullCard,
+                    child: Column(
+                      children: [
+                        // Divider(
+                        //   color: Colors.grey.withOpacity(0.5),
+                        //   thickness: 1,
+                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height: 40,
+                                width: 285,
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 12.0),
+                                      child: Icon(
+                                        Icons.location_on,
+                                        color: Color(CustomColors.GREEN_DARK),
+                                        size: 30,
+                                      ),
+                                    ),
+                                    Text(
+                                      textAlign: TextAlign.center,
+                                      'Parked At: ' + widget.address!,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              // child: Container(
+                              //   child: widget.parkingCharges != null
+                              //       ? Text(
+                              //           'Parking Charges: ' +
+                              //               (widget.parkingCharges ?? ""),
+                              //           style: TextStyle(
+                              //               fontSize: 14,
+                              //               fontWeight: FontWeight.w600,
+                              //               color: Colors.black.withOpacity(0.5)),
+                              //         )
+                              //       : Container(),
+                              // ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(),
+            isVisibleFullCard
+                ? Visibility(
+                    visible: isVisibleFullCard,
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 40,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color(CustomColors.GREEN_DARK)
+                                        .withOpacity(0.7),
+                                    width: 1),
+                                color: Color(CustomColors.GREEN_DARK)
+                                    .withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 25.0, top: 10.0),
+                                child: Text(
+                                  widget.date!,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(CustomColors.GREEN_DARK)),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              height: 40,
+                              width: 160,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color(CustomColors.PURPLE_DARK)
+                                        .withOpacity(0.7),
+                                    width: 1),
+                                color: Color(CustomColors.PURPLE_DARK)
+                                    .withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10.0),
+                                    child: Icon(
+                                      Icons.calendar_month,
+                                      color: Color(CustomColors.PURPLE_DARK),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 12, top: 3),
+                                    child: Text(
+                                      widget.time!,
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w800,
+                                          color:
+                                              Color(CustomColors.PURPLE_DARK)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )),
+                  )
+                : Container(),
+            isVisibleFullCard
+                ? Visibility(
+                    visible: isVisibleFullCard,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color(CustomColors.GREEN_DARK)
+                                    .withOpacity(0.7),
+                              ),
+                              color: Color(CustomColors.GREEN_DARK)
+                                  .withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5,
+                                  ),
+                                  child: Icon(
+                                    Icons.lock_clock,
+                                    color: Color(CustomColors.GREEN_DARK),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  widget.timer!,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(CustomColors.GREEN_DARK)),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 15),
+                          // Padding(
+                          //   padding: const EdgeInsets.only(left: 12),
+                          //   child: Container(
+                          //     height: 40,
+                          //     width: 160,
+                          //     decoration: BoxDecoration(
+                          //       border: Border.all(
+                          //         color: Color(CustomColors.PURPLE_DARK)
+                          //             .withOpacity(0.7),
+                          //       ),
+                          //       color: Color(CustomColors.PURPLE_DARK)
+                          //           .withOpacity(0.3),
+                          //       borderRadius: BorderRadius.circular(10),
+                          //     ),
+                          //     child: widget.parkingCharges != null
+                          //         ? Row(
+                          //             children: [
+                          //               Icon(
+                          //                 Icons.money,
+                          //                 color:
+                          //                     Color(CustomColors.PURPLE_DARK),
+                          //               ),
+                          //               Padding(
+                          //                 padding: const EdgeInsets.only(
+                          //                     top: 3, left: 10),
+                          //                 child: Text(
+                          //                   'Charges: ' +
+                          //                       (widget.parkingCharges ?? ""),
+                          //                   style: TextStyle(
+                          //                       fontSize: 15,
+                          //                       fontWeight: FontWeight.w900,
+                          //                       color: Color(
+                          //                           CustomColors.PURPLE_DARK)),
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           )
+                          //         : Container(),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Container(),
+          ],
+        ),
+      ),
+    ));
+  }
+
+  void addVehicle(String vehicleNo, String vehicleType) async {
+    setState(() {
+      isLoading = true;
+    });
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+    String? userID = sharedPreferences.getString(Constants.USER_ID);
+
+    final dio = Dio(BaseOptions(contentType: "application/json"));
+    dio.interceptors.add(AuthInterceptor(accessToken!));
+
+    final ApiService apiService = ApiService(dio);
+
+    try {
+      final response = await apiService
+          .addVehicle(AddVehicleRequest(userID!, vehicleNo, vehicleType));
+
+      sharedPreferences.setString(Constants.VEHICLE_ID, response.vehicleID);
+      sharedPreferences.setString(Constants.VEHICLE_NO, vehicleNo);
+      sharedPreferences.setString(Constants.VEHICLE_TYPE, vehicleType);
+      CommonUtil().showToast("Default Vehicle Changed");
+    } on DioException catch (e) {
+      String errorMessage = e.response?.data['message'];
+      print("errorMessage---" + errorMessage.toString());
+      CommonUtil().showToast(errorMessage);
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void deleteVehicle(String vehicleNo) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+    String defaultVehicleNo =
+        sharedPreferences.getString(Constants.VEHICLE_NO) ?? "";
+    if (defaultVehicleNo == widget.vehicleNo) {
+      CommonUtil().showToast("Cannot Delete Default Vehicle");
+      return;
+    }
+    setState(() {
+      isLoadingDeletion = true;
+    });
+
+    final dio = Dio(BaseOptions(contentType: "application/json"));
+    dio.interceptors.add(AuthInterceptor(accessToken!));
+
+    final ApiService apiService = ApiService(dio);
+
+    try {
+      final response = await apiService.deleteVehicle(vehicleNo);
+      String message = response.message ?? "";
+      if (message == "") {
+        CommonUtil().showToast("Vehicle Deleted Successfully");
+        widget.getVehicleHistory();
+      } else {
+        CommonUtil().showToast(message);
+      }
+    } on DioException catch (e) {
+      String errorMessage = e.response?.data['message'];
+      print("errorMessage---" + errorMessage.toString());
+      CommonUtil().showToast(errorMessage);
+    }
+    setState(() {
+      isLoadingDeletion = false;
+    });
+  }
+
+  Future<void> checkIfDefaultVehicleSet() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? defaultVehicleID = prefs.getString(Constants.VEHICLE_ID);
+    if (defaultVehicleID == widget.vehicleNo) {
+      setState(() {
+        isDefaultSet = true;
+        //   print("Default Vehicle Set: " + widget.vehicleNo);
+      });
+    } else {
+      setState(() {
+        isDefaultSet = false;
+      });
+    }
+  }
+}

@@ -12,136 +12,207 @@ import 'package:parkey_customer/HomeFragment.dart';
 import 'package:parkey_customer/colors/CustomColors.dart';
 
 import '../Fragment/parked_vehicle_fragment_base.dart';
-import '../Fragment/parked_vehicles_fragment.dart';
 
 class HomeScreen extends StatefulWidget {
   int index;
   String path;
-  HomeScreen({required this.index, required this.path,super.key});
+  HomeScreen({required this.index, required this.path, super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-  List<Widget> tabs = [];
+  late int _currentIndex;
+  late PageController _pageController;
   double parentHeight = 0.0;
+  bool _isDisposed = false;
+  List<Widget> tabs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.index == -1 ? 4 : widget.index;
+    _pageController = PageController(initialPage: _currentIndex);
+    _isDisposed = false;
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _safeSetState(VoidCallback fn) {
+    if (!_isDisposed && mounted) {
+      setState(fn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     parentHeight = MediaQuery.of(context).size.height;
-    if(widget.index == -1){
-      _currentIndex = 4;
-      widget.index = 0;
-    }
     tabs = [
-      HomeFragment(context: context,),
+      HomeFragment(context: context),
       ParkedVehicleFragmentBase(),
       WalletFragment(),
       HistoryFragment(),
-      ProfileFragmentBase(context: context,path: widget.path),
+      ProfileFragmentBase(context: context, path: widget.path),
     ];
-    return WillPopScope(
-      onWillPop: () async {
-        setState(() {
-          _currentIndex = 0;
-        });
-        return false;
+
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          _navigateToHome();
+        }
       },
-      child: SafeArea(
-        child: Material(
-          child: GestureDetector(
-            onHorizontalDragUpdate: (details) {
-              // Do nothing on horizontal swipe
-            },
-            child: Scaffold(
-              body: tabs[_currentIndex],
-              bottomNavigationBar: SizedBox(
-                height: 0.09*parentHeight,
-                child: BottomNavigationBar(
-                  currentIndex: _currentIndex,
-                  onTap: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                      widget.path = '/';
-                    });
-                  },
-                  items: [
-                    _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_home.png',
-                      label: 'Home',
-                      index: 0,
-                    ),
-                    _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_exit.png',
-                      label: 'Parked Vehicles',
-                      index: 1,
-                    ),
-                    _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_wallet.png',
-                      label: 'Wallet',
-                      index: 2,
-                    ),
-                    _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_history.png',
-                      label: 'History',
-                      index: 3,
-                    ),
-                    _buildBottomNavigationBarItem(
-                      iconPath: 'assets/Icons/icon_profile.png',
-                      label: 'Profile',
-                      index: 4,
-                    ),
-                  ],
-                  selectedItemColor: Color(CustomColors.GREEN_BUTTON),
-                  unselectedItemColor: Colors.black,
-                  type: BottomNavigationBarType.fixed,
-                  backgroundColor: Colors.white,
-                  showUnselectedLabels: true,
-                  showSelectedLabels: true,
-                ),
-              ),
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade50,
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          onPageChanged: _onPageChanged,
+          children: tabs,
+        ),
+        bottomNavigationBar: _buildBottomNavigationBar(),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return SafeArea(
+      child: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
+          ],
+        ),
+        child: Container(
+          height: 80,
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildNavItem(0, Icons.home_outlined, Icons.home, 'Home'),
+              _buildNavItem(
+                1,
+                Icons.local_parking_outlined,
+                Icons.local_parking,
+                'Parked',
+              ),
+              _buildNavItem(
+                2,
+                Icons.account_balance_wallet_outlined,
+                Icons.account_balance_wallet,
+                'Wallet',
+              ),
+              _buildNavItem(
+                3,
+                Icons.history_outlined,
+                Icons.history,
+                'History',
+              ),
+              _buildNavItem(4, Icons.person_outline, Icons.person, 'Profile'),
+            ],
           ),
         ),
       ),
     );
   }
 
-  BottomNavigationBarItem _buildBottomNavigationBarItem({
-    required String iconPath,
-    required String label,
-    required int index,
-  }) {
-    return BottomNavigationBarItem(
-      icon: Container(
-        decoration: BoxDecoration(
-          color: _currentIndex == index
-              ? Color(CustomColors.GREEN_BUTTON)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(50),
-        ),
-        padding: EdgeInsets.all(8),
-        child: Image(
-          width: 50,
-          height: 0.03 * parentHeight,
-          image: AssetImage(iconPath),
+  Widget _buildNavItem(
+    int index,
+    IconData inactiveIcon,
+    IconData activeIcon,
+    String label,
+  ) {
+    bool isSelected = _currentIndex == index;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _onTabTapped(index),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Color(CustomColors.GREEN_BUTTON).withOpacity(0.15)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  isSelected ? activeIcon : inactiveIcon,
+                  size: isSelected ? 26 : 24,
+                  color: isSelected
+                      ? Color(CustomColors.GREEN_BUTTON)
+                      : Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected
+                      ? Color(CustomColors.GREEN_BUTTON)
+                      : Colors.grey.shade600,
+                  fontSize: isSelected ? 12 : 11,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      label: label,
     );
+  }
+
+  void _onTabTapped(int index) {
+    if (_currentIndex == index || _isDisposed || !mounted) return;
+    HapticFeedback.lightImpact();
+    _safeSetState(() {
+      _currentIndex = index;
+      widget.path = '/';
+    });
+    _pageController.jumpToPage(index);
+  }
+
+  void _onPageChanged(int index) {
+    if (_currentIndex != index && !_isDisposed && mounted) {
+      _safeSetState(() {
+        _currentIndex = index;
+      });
+    }
+  }
+
+  void _navigateToHome() {
+    if (_currentIndex != 0 && !_isDisposed && mounted) {
+      _safeSetState(() {
+        _currentIndex = 0;
+      });
+      _pageController.jumpToPage(0);
+    }
   }
 
   Future<Uint8List> getImages(String path, int width) async {
     ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetHeight: width);
+    ui.Codec codec = await ui.instantiateImageCodec(
+      data.buffer.asUint8List(),
+      targetHeight: width,
+    );
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
+    return (await fi.image.toByteData(
+      format: ui.ImageByteFormat.png,
+    ))!.buffer.asUint8List();
   }
-
-  void initialiseUI() {}
 }

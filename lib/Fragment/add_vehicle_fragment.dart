@@ -3,6 +3,9 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:parkey_customer/Fragment/ProfileFragment.dart';
+import 'package:parkey_customer/Fragment/history.dart';
 import 'package:parkey_customer/UIComponents/back_top_title.dart';
 import 'package:parkey_customer/utils/common_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +29,7 @@ class AddVehicleFragment extends StatefulWidget {
 }
 
 class _AddVehicleFragmentState extends State<AddVehicleFragment> {
+  final _vnumber = GlobalKey<FormState>();
   final TextEditingController vehicleNumberInputController =
       TextEditingController();
   String? vehicleType;
@@ -33,7 +37,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
   bool isLoadingList = true;
   List<CustomerVehicleResponse> customerVehicleResponseList = [];
   bool isSaving = false;
-  String errorMessage="Some Error Occurred";
+  String errorMessage = "Some Error Occurred";
 
   @override
   void initState() {
@@ -44,110 +48,130 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
 
   @override
   Widget build(BuildContext context) {
-    double widthParent = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return WillPopScope(
       onWillPop: () async {
         print('onwillpop');
         Navigator.pop(context);
         return false;
       },
-      child: SafeArea(
-          child: Material(
-        child: ListView(
-          children: [
-            Stack(
-              children: [
-                Column(
-                  children: [
-                    ClipPath(
-                      clipper: LoginDoneClipper1(),
-                      child: Container(
-                        height: 150,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(CustomColors.PURPLE_LIGHT),
-                            Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
-                          ],
-                        )),
-                      ),
-                    ),
-                    ClipPath(
-                      clipper: LoginScreenClipper2(),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height - 150,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
-                            Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
-                          ],
-                        )),
-                      ),
-                    ),
-                  ],
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          toolbarHeight: 77,
+          leading: Container(
+              margin: EdgeInsets.only(top: 18, left: 10, bottom: 17),
+              height: 2,
+              width: 20,
+              decoration: BoxDecoration(
+                  color: Color(CustomColors.PURPLE_DARK),
+                  borderRadius: BorderRadius.circular(10)),
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProfileFragment(
+                                context: context,
+                              )),
+                    );
+                    // Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_outlined,
+                    color: Colors.white,
+                  ))),
+          title: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Text(
+                  'Add Vehicle',
+                  style: TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.bold,
+                      color: Color(CustomColors.PURPLE_DARK)),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                    child: Container(
-                      color: Colors.transparent,
-                    ),
-                  ),
-                ),
-                Column(
-                  children: [
-                    BackTopTitle('assets/images/arrow_back.png', Colors.black,
-                        'Add Vehicle', ''),
-                    Container(
-                      margin: EdgeInsets.only(left: 20),
-                      alignment: Alignment.topLeft,
-                      child: Text('My Vehicles'),
-                    ),
-                    isLoadingList
-                        ?  Center(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      color: Color(CustomColors.GREEN_BUTTON),
-                                      width: 2),
-                                  borderRadius: BorderRadius.circular(20)),
-                              height: 270,
-                              width: widthParent * 0.9,
-                              child: errorMessage != "" ? Center(child: Container(child: Text(errorMessage),),) : SizedBox(
-                                child: Transform.scale(
-                                  scale: 0.2,
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Color(CustomColors.GREEN_BUTTON)),
-                                    strokeWidth: 25,
-                                  ),
-                                ),
-                              ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 0.01),
+                // child: Text(
+                //   'Add new Vehicle',
+                //   style: TextStyle(
+                //       fontSize: 15, color: Colors.grey.withOpacity(0.9)),
+                // ),
+              )
+            ],
+          ),
+          centerTitle: true,
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Color(CustomColors.PURPLE_LIGHT).withOpacity(0.01),
+            Color(CustomColors.PURPLE_DARK).withOpacity(0.2)
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+          child: SafeArea(
+              child: ListView(
+            children: [
+              Stack(
+                children: [
+                  Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          margin: EdgeInsets.only(top: 10, bottom: 5),
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            'My Vehicles',
+                            //  textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      color: Color(CustomColors.GREEN_BUTTON),
-                                      width: 2),
-                                  borderRadius: BorderRadius.circular(20)),
+                          ),
+                        ),
+                      ),
+                      isLoadingList
+                          ? Center(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    // border: Border.all(
+                                    //     color: Color(CustomColors.GREEN_BUTTON),
+                                    //     width: 2),
+                                    borderRadius: BorderRadius.circular(20)),
+                                height: screenHeight * 0.2,
+                                width: screenWidth * 0.4,
+                                child: errorMessage != ""
+                                    ? Center(
+                                        child: Container(
+                                          child: Text(errorMessage),
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        child: Transform.scale(
+                                          scale: 0.2,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Color(CustomColors
+                                                        .GREEN_BUTTON)),
+                                            strokeWidth: 25,
+                                          ),
+                                        ),
+                                      ),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: Padding(
-                                padding: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   // Disable scrolling
@@ -157,7 +181,7 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                   itemBuilder: (context, index) {
                                     final item =
                                         customerVehicleResponseList[index];
-                                    return HistoryItem(
+                                    return History(
                                         item.customerName ?? "",
                                         item.vehicleNo,
                                         item.vehicleType,
@@ -165,150 +189,221 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
                                         null,
                                         null,
                                         null,
-                                    true,getVehicleHistory, null);
+                                        true,
+                                        getVehicleHistory,
+                                        null);
                                   },
                                 ),
                               ),
                             ),
-                          ),
-                    Container(
-                      alignment: Alignment.topLeft,
-                      margin: EdgeInsets.only(left: 30),
-                      child: Text('Add New Vehicle'),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 30, top: 30),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(right: 32),
-                            child: Text(
-                              'Vehicle No: ',
-                              style: TextStyle(fontSize: 14),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          width: 500,
+                          margin: EdgeInsets.only(top: 10, bottom: 5),
+                          padding: EdgeInsets.only(left: 30),
+                          child: Text(
+                            'Add vehicle',
+                            //  textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.GREEN_BUTTON),
-                                    width: 1.5),
-                                borderRadius: BorderRadius.circular(10)),
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: vehicleNumberInputController,
-                                maxLength: 10,
-                                inputFormatters: [UpperCaseTextFormatter()],
-                                style: TextStyle(fontSize: 18),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Enter Vehicle Number',
-                                  isCollapsed: true,
-                                    counterText: ''
+                        ),
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.03,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                            top: 10, bottom: 10, left: 10, right: 10),
+                        decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.grey,
+                                  offset: Offset(5, 4),
+                                  blurRadius: 15.0,
+                                  spreadRadius: 2),
+                              // BoxShadow(
+                              //     color: Colors.white,
+                              //     offset: Offset(-5, -5),
+                              //     blurRadius: 4,
+                              //     spreadRadius: 2)
+                            ],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: screenWidth * 0.8,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Form(
+                                key: _vnumber,
+                                child: TextFormField(
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
+                                  controller: vehicleNumberInputController,
+                                  decoration: InputDecoration(
+
+                                      //  hintText: 'Gj041299',
+                                      prefixIcon: Icon(
+                                        Icons.pedal_bike_rounded,
+                                        color: Color(CustomColors.GREEN_DARK),
+                                        size: 25,
+                                      ),
+                                      labelStyle: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500),
+                                      labelText: 'Enter vehicle Number',
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color:
+                                                Color(CustomColors.GREEN_DARK),
+                                            width: 2),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color:
+                                                Color(CustomColors.GREEN_DARK),
+                                            width: 1.5),
+                                        borderRadius: BorderRadius.circular(10),
+                                      )),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter vehicle number';
+                                    }
+                                    final RegExp reg = RegExp(
+                                        r'^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$');
+                                    if (!reg.hasMatch(value)) {
+                                      return 'Invalid format';
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ),
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 30, top: 30),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(right: 15),
-                            child: Text(
-                              'Vehicle Type: ',
-                              style: TextStyle(fontSize: 14),
+                            SizedBox(
+                              height: screenHeight * 0.021,
                             ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.GREEN_BUTTON),
-                                    width: 1.5),
-                                borderRadius: BorderRadius.circular(10)),
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: DropdownButton<String>(
-                                isExpanded: true,
-                                value: vehicleType,
-                                hint: Text('Select Vehicle Type'),
-                                items: _items.map((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    vehicleType = newValue;
-                                  });
-                                },
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    isSaving
-                        ? Container(
-                            margin: EdgeInsets.only(top: 50),
-                            width: 30,
-                            height: 30,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Color(CustomColors.GREEN_BUTTON)),
-                              strokeWidth: 4,
-                            ),
-                          )
-                        :
-                    Container(
-                            margin: EdgeInsets.only(top: 20),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                addVehicle(vehicleNumberInputController.text,
-                                    vehicleType!);
-                              },
+                            Container(
+                              margin: EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: Color(CustomColors.GREEN_BUTTON),
+                                      width: 1.5),
+                                  borderRadius: BorderRadius.circular(10)),
+                              width: MediaQuery.of(context).size.width * 0.8,
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 10, bottom: 10, left: 50, right: 50),
-                                child: Container(
-                                  child: Text(
-                                    'Save',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 18),
-                                  ),
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Color(CustomColors.GREEN_BUTTON),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      20.0), // Set border radius
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.car_repair,
+                                      size: 30,
+                                      color: Color(CustomColors.GREEN_DARK),
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Container(
+                                      //   width: screenWidth * 0.5,
+                                      child: Expanded(
+                                        child: DropdownButton<String>(
+                                          icon: Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: Icon(Icons
+                                                .keyboard_arrow_down_outlined),
+                                          ),
+                                          isExpanded: true,
+                                          value: vehicleType,
+                                          hint: Text('Select Vehicle Type'),
+                                          items: _items.map((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              vehicleType = newValue;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          )
-                  ],
-                )
-              ],
-            )
-          ],
+                            isSaving
+                                ? Container(
+                                    margin: EdgeInsets.only(top: 50),
+                                    width: 30,
+                                    height: 30,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Color(CustomColors.GREEN_BUTTON)),
+                                      strokeWidth: 4,
+                                    ),
+                                  )
+                                : Container(
+                                    width: screenWidth * 0.5,
+                                    margin: EdgeInsets.only(top: 20),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        _vnumber.currentState!.validate();
+                                        addVehicle(
+                                            vehicleNumberInputController.text,
+                                            vehicleType!);
+                                      },
+                                      child: Container(
+                                        child: Text(
+                                          'Save',
+                                          style: TextStyle(
+                                              color: const Color.fromARGB(
+                                                  255, 244, 241, 241),
+                                              fontSize: 13),
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Color(CustomColors.GREEN_DARK)
+                                                .withOpacity(0.5),
+                                        side: BorderSide(
+                                          color: Color(CustomColors.GREEN_DARK),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.2,
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
+          )),
         ),
-      )),
+      ),
     );
   }
 
   void addVehicle(String vehicleNo, String vehicleType) async {
     try {
-
       if (vehicleType == "") {
         Fluttertoast.showToast(
           msg: 'Select Vehicle Type',
@@ -374,70 +469,66 @@ class _AddVehicleFragmentState extends State<AddVehicleFragment> {
 
   void getVehicleHistory() async {
     print('avf');
-    try{
-
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
-    String? userID = sharedPreferences.getString(Constants.USER_ID);
-
-    final dio = Dio(BaseOptions(contentType: "application/json"));
-    dio.interceptors.add(AuthInterceptor(accessToken!));
-
-    final ApiService apiService = ApiService(dio);
-
     try {
-      final response = await apiService.getCustomerVehicleDetails(userID!);
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+      String? userID = sharedPreferences.getString(Constants.USER_ID);
 
-      Set<String> uniqueVehicle = {};
+      final dio = Dio(BaseOptions(contentType: "application/json"));
+      dio.interceptors.add(AuthInterceptor(accessToken!));
 
-      List<CustomerVehicleResponse> tempList = [];
+      final ApiService apiService = ApiService(dio);
 
-      int len = response.customerVehicleList.length;
-      for (int i = 0; i < len; i++) {
-        String vno = response.customerVehicleList.elementAt(i).vehicleNo;
-        if (!uniqueVehicle.contains(vno)) {
-          tempList.add(response.customerVehicleList.elementAt(i));
+      try {
+        final response = await apiService.getCustomerVehicleDetails(userID!);
+
+        Set<String> uniqueVehicle = {};
+
+        List<CustomerVehicleResponse> tempList = [];
+
+        int len = response.customerVehicleList.length;
+        for (int i = 0; i < len; i++) {
+          String vno = response.customerVehicleList.elementAt(i).vehicleNo;
+          if (!uniqueVehicle.contains(vno)) {
+            tempList.add(response.customerVehicleList.elementAt(i));
+          }
+          uniqueVehicle.add(vno);
         }
-        uniqueVehicle.add(vno);
-      }
 
-      if(tempList.isEmpty){
+        if (tempList.isEmpty) {
+          setState(() {
+            errorMessage = Constants.EMPTY_VEHICLE_LIST;
+          });
+          return;
+        }
+
         setState(() {
-          errorMessage = Constants.EMPTY_VEHICLE_LIST;
-        });
-        return;
-      }
-
-      setState(() {
-        customerVehicleResponseList = tempList;
-        isLoadingList = false;
-      });
-
-      print("getVehicleH"+response.toString());
-
-    } on DioException catch (e) {
-      if(e.response?.statusCode == 400){
-       // String errorMessage = e.response?.data['message'];
-        print("errorMessage1---" + errorMessage.toString());
-        CommonUtil().showToast(errorMessage);
-        setState(() {
-          this.errorMessage = errorMessage;
+          customerVehicleResponseList = tempList;
           isLoadingList = false;
         });
-      }
-      else{
-        print("errorMessage2---" + errorMessage.toString());
 
-        CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
-      }
-    }
-    }catch(e){
+        print("getVehicleH" + response.toString());
+      } on DioException catch (e) {
+        if (e.response?.statusCode == 400) {
+          // String errorMessage = e.response?.data['message'];
+          print("errorMessage1---" + errorMessage.toString());
+          CommonUtil().showToast(errorMessage);
+          setState(() {
+            this.errorMessage = errorMessage;
+            isLoadingList = false;
+          });
+        } else {
+          print("errorMessage2---" + errorMessage.toString());
 
+          CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
+        }
+      }
+    } catch (e) {
       setState(() {
         errorMessage = Constants.GENERIC_ERROR_MESSAGE;
       });
       print("errorMessage6---" + e.toString());
-
 
       CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
     }

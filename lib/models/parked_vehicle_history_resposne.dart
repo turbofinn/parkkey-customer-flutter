@@ -8,7 +8,10 @@ class ParkedVehicleHistoryResponse {
 
   ParkedVehicleHistoryResponse({required this.parkedVehicleHistoryList});
 
-  factory ParkedVehicleHistoryResponse.fromJson(Map<String, dynamic> json) => _$ParkedVehicleHistoryResponseFromJson(json);
+  factory ParkedVehicleHistoryResponse.fromJson(Map<String, dynamic> json) =>
+      _$ParkedVehicleHistoryResponseFromJson(json);
+
+  get customerVehicleList => null;
 
   Map<String, dynamic> toJson() => _$ParkedVehicleHistoryResponseToJson(this);
 }
@@ -16,37 +19,66 @@ class ParkedVehicleHistoryResponse {
 @JsonSerializable()
 class ParkingResponse {
   @JsonKey(name: 'customerName')
-  final String customerName;
+  final String? customerName;
 
   @JsonKey(name: 'vehicleType')
-  final String vehicleType;
+  final String? vehicleType;
 
   @JsonKey(name: 'vehicleNo')
-  final String vehicleNo;
+  final String? vehicleNo;
 
   @JsonKey(name: 'parkingStatus')
-  final String parkingStatus;
+  final String? parkingStatus;
 
   @JsonKey(name: 'parkingLocation')
-  final String parkingLocation;
+  final String? parkingLocation;
 
   @JsonKey(name: 'mobileNo')
-  final String mobileNo;
+  final String? mobileNo;
 
   @JsonKey(name: 'parkedDuration')
-  final String parkedDuration;
+  final String? parkedDuration;
 
-  ParkingResponse({
-    required this.customerName,
-    required this.vehicleType,
-    required this.vehicleNo,
-    required this.parkingStatus,
-    required this.parkingLocation,
-    required this.mobileNo,
-    required this.parkedDuration,
-  });
+  @JsonKey(name: 'parkDate')
+  final String? parkDate;
 
-  factory ParkingResponse.fromJson(Map<String, dynamic> json) => _$ParkingResponseFromJson(json);
+  @JsonKey(name: 'parkingSpaceNo')
+  final String? parkingSpaceNo;
+
+  @JsonKey(name: 'parkingTicketID')
+  final String? parkingTicketID;
+
+  @JsonKey(name: 'parkingCharges')
+  final String? parkingCharges;
+
+  @JsonKey(name: 'entryTime')
+  final String? entryTime;
+
+  @JsonKey(name: 'exitTime')
+  final String? exitTime;
+
+  @JsonKey(name: 'parkingName')
+  final String? parkingName;
+
+  ParkingResponse(
+    this.customerName,
+    this.vehicleType,
+    this.vehicleNo,
+    this.parkingStatus,
+    this.parkingLocation,
+    this.mobileNo,
+    this.parkedDuration,
+    this.parkDate,
+    this.parkingSpaceNo,
+    this.parkingTicketID,
+    this.parkingCharges,
+    this.entryTime,
+    this.exitTime,
+    this.parkingName,
+  );
+
+  factory ParkingResponse.fromJson(Map<String, dynamic> json) =>
+      _$ParkingResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ParkingResponseToJson(this);
 }

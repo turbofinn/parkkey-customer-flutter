@@ -191,13 +191,14 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<ParkedVehicleResponse> getCustomerParkingHistory(String userID) async {
+  Future<ParkedVehicleHistoryResponse> getCustomerParkingHistory(
+      String userID) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'userID': userID};
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ParkedVehicleResponse>(Options(
+        _setStreamType<ParkedVehicleHistoryResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -213,7 +214,7 @@ class _ApiService implements ApiService {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ParkedVehicleResponse.fromJson(_result.data!);
+    final value = ParkedVehicleHistoryResponse.fromJson(_result.data!);
     return value;
   }
 
@@ -411,6 +412,33 @@ class _ApiService implements ApiService {
               baseUrl,
             ))));
     final value = WalletBalanceResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<dynamic> fetchPaymentHistory(Map<String, String> body) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _result = await _dio.fetch(_setStreamType<dynamic>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/customer-flow-handler/fetch-payment-history',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+    final value = _result.data;
     return value;
   }
 

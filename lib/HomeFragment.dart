@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
@@ -22,6 +23,8 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
+
 import 'package:geolocator/geolocator.dart' as GeoLocator;
 import 'package:geocoding/geocoding.dart';
 
@@ -29,15 +32,17 @@ import 'colors/CustomColors.dart';
 
 class HomeFragment extends StatefulWidget {
   BuildContext context;
-  HomeFragment({required this.context,super.key});
+  HomeFragment({required this.context, super.key});
   // const HomeFragment({super.key});
 
   @override
   State<HomeFragment> createState() => _HomeFragmentState();
 }
 
-class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver{
+class _HomeFragmentState extends State<HomeFragment>
+    with WidgetsBindingObserver {
   static GoogleMapController? _googleMapController;
+  List<String> photoUrls = []; // Initialize the list
   static Set<Marker> _markers = {};
   final Map<String, String> _markerValues = {};
   bool isVisibleFirstCard = true,
@@ -52,6 +57,7 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
   String parkingName = "";
   String review = "";
   String location = "";
+  List<String> parkingImagesList = [];
   String parkingSpaceStatus = "";
   String distance = "";
   String rating = "";
@@ -71,6 +77,8 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
   String defaultVehicleTypeUri = 'assets/images/';
   List<ParkingLocationResponse> parkingLocationList = [];
   ItemScrollController _scrollController = ItemScrollController();
+  final TextEditingController parkingDestinationController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -90,12 +98,11 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
     }
   }
 
-  void onResume() async{
+  void onResume() async {
     // Your custom logic here
     print('App resumed');
     checkIfReached();
     await fetchLocation();
-
   }
 
   @override
@@ -106,7 +113,6 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
     _disposed = true;
     super.dispose();
   }
-
 
   CameraPosition _initailCameraPosition =
       CameraPosition(zoom: 18, target: LatLng(12.954372, 77.719172));
@@ -119,8 +125,26 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
   Map<PolylineId, Polyline> polylines = {};
   late List<PointsModel> _points = [];
 
+  Widget _buildStarRating(double rating) {
+    int fullStars = rating.floor(); // Full stars
+    bool hasHalfStar = rating - fullStars >= 0.5; // Check for half star
+    int emptyStars =
+        5 - fullStars - (hasHalfStar ? 1 : 0); // Remaining empty stars
+
+    return Row(
+      children: [
+        for (int i = 0; i < fullStars; i++)
+          Icon(Icons.star, color: Colors.amber, size: 16),
+        if (hasHalfStar) Icon(Icons.star_half, color: Colors.amber, size: 16),
+        for (int i = 0; i < emptyStars; i++)
+          Icon(Icons.star_border, color: Colors.amber, size: 16),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    double widthParent = MediaQuery.of(context).size.width;
     print('setState--' + key.toString());
     return SafeArea(
       child: Material(
@@ -129,7 +153,9 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
             Container(
               child: GoogleMap(
                 gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                  new Factory<OneSequenceGestureRecognizer>(() => new EagerGestureRecognizer(),),
+                  new Factory<OneSequenceGestureRecognizer>(
+                    () => new EagerGestureRecognizer(),
+                  ),
                 ].toSet(),
                 key: ValueKey(key),
                 myLocationButtonEnabled: false,
@@ -174,12 +200,17 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                       margin: EdgeInsets.only(left: 20),
                       width: MediaQuery.of(context).size.width * 0.7,
                       child: TextField(
+                        controller: parkingDestinationController,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Select Your Parking Destination...',
                           isCollapsed: true,
                           contentPadding: EdgeInsets.all(10),
                         ),
+                        onSubmitted: (value) {
+                          _searchParkingDestination(
+                              value); // Trigger search on submission
+                        },
                       ),
                     ),
                     Container(
@@ -239,13 +270,6 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: Image(
-                                      fit: BoxFit.fitHeight,
-                                      image:
-                                          AssetImage('assets/images/bell.png')),
                                 ),
                               ),
                             ),
@@ -327,11 +351,14 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                                   width: MediaQuery.of(context).size.width,
                                   child: Center(
                                       child: Text(
-                                          'Default Vehicle', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),)),
+                                    'Default Vehicle',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  )),
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
                                       width: 50,
@@ -341,18 +368,39 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                                           image: AssetImage(
                                               defaultVehicleTypeUri)),
                                     ),
-                                    Container(child: Text("       $defaultVehicleNo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)   ),),
+                                    Container(
+                                      child: Center(
+                                          child: Text(
+                                        "   " + defaultVehicleNo + " ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      )),
+                                    ),
                                     Container(
                                       margin: EdgeInsets.only(left: 5),
                                       child: GestureDetector(
-                                      onTap: (){
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen(index: -1,path: '/AddVehicle',)));
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      HomeScreen(
+                                                        index: -1,
+                                                        path: '/AddVehicle',
+                                                      )));
 
-                                        // Navigator.of(widget.context).pushNamed('/AddVehicle');
-                                      },
-                                      child: Text('Change', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(
-                                          CustomColors.GREEN_BUTTON)),),
-                                    ),)
+                                          // Navigator.of(widget.context).pushNamed('/AddVehicle');
+                                        },
+                                        child: Text(
+                                          'Change',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                              color: Color(
+                                                  CustomColors.GREEN_BUTTON)),
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 )
                               ],
@@ -368,215 +416,272 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                             ),
                           ),
                           Container(
-                            height: 200,
-                            margin: EdgeInsets.only(left: 10, right: 10),
-                            width: MediaQuery.of(context).size.width - 20,
-                            child: parkingLocationList.isEmpty
-                                ? errorMessageFetchParkingSpaceInfo != ""
-                                    ? Center(
-                                        child: Container(
-                                          child: Text(
-                                              errorMessageFetchParkingSpaceInfo),
-                                        ),
-                                      )
-                                    : Center(
-                                        child: Container(
-                                          height: 40,
-                                          width: 40,
-                                          child: SizedBox(
-                                            child: Transform.scale(
-                                              scale: 0.9,
-                                              child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        Color(CustomColors
-                                                            .GREEN_BUTTON)),
-                                                strokeWidth: 5,
+                              height: 200,
+                              margin: EdgeInsets.only(left: 10, right: 10),
+                              width: MediaQuery.of(context).size.width - 20,
+                              child: parkingLocationList.isEmpty
+                                  ? errorMessageFetchParkingSpaceInfo != ""
+                                      ? Center(
+                                          child: Container(
+                                            child: Text(
+                                                errorMessageFetchParkingSpaceInfo),
+                                          ),
+                                        )
+                                      : Center(
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            child: SizedBox(
+                                              child: Transform.scale(
+                                                scale: 0.9,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                              Color>(
+                                                          Color(CustomColors
+                                                              .GREEN_BUTTON)),
+                                                  strokeWidth: 5,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      )
-                                : ScrollablePositionedList.builder(
-                                itemScrollController: _scrollController,
-                                itemCount: parkingLocationList.length,
-                                itemBuilder: (context, index) {
-                                  final item = parkingLocationList[index];
-                                  return Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey
-                                              .withOpacity(0.5), // Shadow color
-                                          spreadRadius: 5, // Spread radius
-                                          blurRadius: 7, // Blur radius
-                                          offset:
-                                          Offset(0, 3), // Offset from the container
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(20),
-                                      // Border radius
-                                      border: Border.all(
-                                        width: 1.5, // Border width
-                                        color: Color(
-                                            CustomColors.GREEN_BUTTON), // Border color
-                                      ),
-                                    ),
-                                    child: Padding(
-                                      padding:
-                                      const EdgeInsets.only(left: 20, top: 8),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                      child: Text(
-                                                        item.parkingSpaceName ?? "",
-                                                        style: TextStyle(
-                                                            fontSize: 20,
-                                                            fontWeight:
-                                                            FontWeight.w600),
-                                                      )),
-                                                  Container(
-                                                      child: Text(
-                                                        // 'Address: $item \n .....................',
-                                                        item.address ?? "",
-                                                        textAlign: TextAlign.start,
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                            FontWeight.w600),
-                                                      )),
-                                                ],
+                                        )
+                                  : ScrollablePositionedList.builder(
+                                      itemScrollController: _scrollController,
+                                      itemCount: parkingLocationList.length,
+                                      itemBuilder: (context, index) {
+                                        final item = parkingLocationList[index];
+                                        return Container(
+                                          margin: EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withOpacity(
+                                                    0.5), // Shadow color
+                                                spreadRadius:
+                                                    5, // Spread radius
+                                                blurRadius: 7, // Blur radius
+                                                offset: Offset(0,
+                                                    3), // Offset from the container
                                               ),
-                                              Container(
-                                                margin:
-                                                EdgeInsets.only(right: 10),
-                                                child: Column(
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            // Border radius
+                                            border: Border.all(
+                                              width: 1.5, // Border width
+                                              color: Color(CustomColors
+                                                  .GREEN_BUTTON), // Border color
+                                            ),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 20, top: 8),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
-                                                    Container(
-                                                      width: 20,
-                                                      height: 20,
-                                                      decoration: BoxDecoration(
-                                                        color: Color(CustomColors
-                                                            .GREEN_500),
-                                                        borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                        // Border radius
-                                                        border: Border.all(
-                                                            width: 1.5,
-                                                            color: Colors
-                                                                .white // Border width
-                                                        ),
-                                                      ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                            child: Text(
+                                                          item.parkingSpaceName ??
+                                                              "",
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        )),
+                                                        Container(
+                                                            width: widthParent *
+                                                                0.6,
+                                                            child: Text(
+                                                              // 'Address: $item \n .....................',
+                                                              item.address ??
+                                                                  "",
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .start,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600),
+                                                            )),
+                                                      ],
                                                     ),
                                                     Container(
-                                                      child: Text(
-                                                        item.parkingSpaceStatus ?? "",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                            FontWeight.w600),
+                                                      margin: EdgeInsets.only(
+                                                          right: 10),
+                                                      child: Column(
+                                                        children: [
+                                                          Container(
+                                                            width: 20,
+                                                            height: 20,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Color(
+                                                                  CustomColors
+                                                                      .GREEN_500),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                              // Border radius
+                                                              border: Border.all(
+                                                                  width: 1.5,
+                                                                  color: Colors
+                                                                      .white // Border width
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            child: Text(
+                                                              item.parkingSpaceStatus ??
+                                                                  "",
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600),
+                                                            ),
+                                                          )
+                                                        ],
                                                       ),
                                                     )
                                                   ],
-                                                ),
-                                              )
-                                            ],
-                                          ), // parking name
-                                          Row(
-                                            children: [
-                                              Image(
-                                                  fit: BoxFit.fitHeight,
-                                                  image: AssetImage(
-                                                      'assets/images/navigator.png')),
-                                              Text(
-                                                _points.length > 0 ? _points.elementAt(index).distance.toString() + ' km.\n Away' : "",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w600),
-                                              )
-                                            ],
-                                          ), // distance
-                                          GestureDetector(
-                                            onTap: () {
-                                              getRoute(origin, _points.elementAt(index).point,
-                                                  parkingSpaceID);
-                                            },
-                                            child: Row(
-                                              children: [
-                                                Image(
-                                                    fit: BoxFit.fitHeight,
-                                                    image: AssetImage(
-                                                        'assets/images/direction.png')),
-                                                Center(
-                                                    child: Text(
-                                                      'Get \n Direction',
-                                                      textAlign: TextAlign.center,
+                                                ), // parking name
+                                                Row(
+                                                  children: [
+                                                    Image(
+                                                        fit: BoxFit.fitHeight,
+                                                        image: AssetImage(
+                                                            'assets/images/navigator.png')),
+                                                    Text(
+                                                      _points.length > 0
+                                                          ? _points
+                                                                  .elementAt(
+                                                                      index)
+                                                                  .distance
+                                                                  .toString() +
+                                                              ' km.\n Away'
+                                                          : "",
                                                       style: TextStyle(
                                                           fontWeight:
-                                                          FontWeight.w600),
-                                                    )),
-                                                Expanded(child: SizedBox()),
+                                                              FontWeight.w600),
+                                                    )
+                                                  ],
+                                                ), // distance
                                                 GestureDetector(
                                                   onTap: () {
-                                                    setState(() {
-                                                      isVisibleFirstCard = false;
-                                                      isVisibleSecondCard = true;
-                                                      parkingName = item.parkingSpaceName ?? "";
-                                                      location = item.address ?? "";
-                                                      parkingSpaceStatus = item.parkingSpaceStatus ?? "";
-                                                      distance = _points.elementAt(index).distance.toString();
-                                                      destination = _points.elementAt(index).point;
-
-                                                    });
+                                                    getRoute(
+                                                        origin,
+                                                        _points
+                                                            .elementAt(index)
+                                                            .point,
+                                                        parkingSpaceID);
                                                   },
-                                                  child: Container(
-                                                    margin: EdgeInsets.only(
-                                                        right: 20),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                      BorderRadius.circular(
-                                                          10),
-                                                      // Border radius
-                                                      border: Border.all(
-                                                        width:
-                                                        1.5, // Border width
-                                                        color: Color(CustomColors
-                                                            .GREEN_BUTTON), // Border color
+                                                  child: Row(
+                                                    children: [
+                                                      Image(
+                                                          fit: BoxFit.fitHeight,
+                                                          image: AssetImage(
+                                                              'assets/images/direction.png')),
+                                                      Center(
+                                                          child: Text(
+                                                        'Get \n Direction',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600),
+                                                      )),
+                                                      Expanded(
+                                                          child: SizedBox()),
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            isVisibleFirstCard =
+                                                                false;
+                                                            isVisibleSecondCard =
+                                                                true;
+                                                            parkingName =
+                                                                item.parkingSpaceName ??
+                                                                    "";
+                                                            location =
+                                                                item.address ??
+                                                                    "";
+                                                            parkingSpaceStatus =
+                                                                item.parkingSpaceStatus ??
+                                                                    "";
+                                                            distance = _points
+                                                                .elementAt(
+                                                                    index)
+                                                                .distance
+                                                                .toString();
+                                                            destination =
+                                                                _points
+                                                                    .elementAt(
+                                                                        index)
+                                                                    .point;
+                                                            parkingImagesList =
+                                                                _points
+                                                                    .elementAt(
+                                                                        index)
+                                                                    .parkingImages;
+                                                          });
+                                                        },
+                                                        child: Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  right: 20),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            // Border radius
+                                                            border: Border.all(
+                                                              width:
+                                                                  1.5, // Border width
+                                                              color: Color(
+                                                                  CustomColors
+                                                                      .GREEN_BUTTON), // Border color
+                                                            ),
+                                                          ),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    left: 30,
+                                                                    right: 30,
+                                                                    top: 6,
+                                                                    bottom: 6),
+                                                            child: Center(
+                                                                child: Text(
+                                                                    'Park Now')),
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    child: Padding(
-                                                      padding:
-                                                      const EdgeInsets.only(
-                                                          left: 30,
-                                                          right: 30,
-                                                          top: 6,
-                                                          bottom: 6),
-                                                      child: Center(
-                                                          child:
-                                                          Text('Park Now')),
-                                                    ),
+                                                    ],
                                                   ),
-                                                ),
+                                                ) // get direction
                                               ],
                                             ),
-                                          ) // get direction
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                            })
-                          ) ,
+                                          ),
+                                        );
+                                      })),
                         ],
                       ),
                     )
@@ -665,13 +770,14 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                                             fontWeight: FontWeight.w600),
                                       )),
                                       Container(
+                                          width: widthParent * 0.6,
                                           child: Text(
-                                        'Address: $location \n .....................',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600),
-                                      )),
+                                            'Address: $location \n .....................',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600),
+                                          )),
                                     ],
                                   ),
                                   Container(
@@ -723,30 +829,31 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                                 ],
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Ratings',
-                                          style: TextStyle(
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Ratings',
+                                            style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 13,
-                                              fontWeight: FontWeight.w600)),
-                                      Container(
-                                          height: 30,
-                                          width: 170,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                width: 1.5,
-                                                color: Color(
-                                                    CustomColors.GREEN_BUTTON)),
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
-                                          child: Text('Rated as 5 Star'))
+                                          SizedBox(height: 5),
+                                          _buildStarRating(double.parse(
+                                              rating)), // Use the helper function
+                                        ],
+                                      )
                                     ],
                                   ),
                                   Container(
@@ -779,15 +886,82 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  child: Text(
-                                    'Safety Features : \n 1. Security Cameras \n 2. Access Control \n 3. Guard Petrol \n 4. Alarm System \n 5. Parking Sensors',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
+                                child: _points.isNotEmpty &&
+                                        _points.first.parkingImages.isNotEmpty
+                                    ? Container(
+                                        height:
+                                            150, // Adjust height based on design requirements
+                                        child: Swiper(
+                                          itemCount: parkingImagesList.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return Image.network(
+                                              parkingImagesList[index],
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Center(
+                                                    child: Text(
+                                                        'Failed to load image'));
+                                              },
+                                            );
+                                          },
+                                          autoplay: true,
+                                          pagination: SwiperPagination(),
+                                          control: SwiperControl(),
+                                        ),
+                                      )
+                                    : SizedBox(), // Empty space if no photos are available
                               ),
+
+                              // Padding(
+                              //   padding: const EdgeInsets.all(8.0),
+                              //   child: Container(
+                              //     child: Text(
+                              //       'Safety Features : \n 1. Security Cameras \n 2. Access Control \n 3. Guard Petrol \n 4. Alarm System \n 5. Parking Sensors',
+                              //       style: TextStyle(
+                              //           fontSize: 12,
+                              //           fontWeight: FontWeight.w600),
+                              //     ),
+                              //   ),
+                              // ),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.center,
+                              //   children: [
+                              //     GestureDetector(
+                              //       onTap: () async {
+                              //         await showParkingPhotosCarousel();
+                              //       },
+                              //       child: Container(
+                              //         margin: EdgeInsets.only(
+                              //             bottom: 10), // Adjust spacing
+                              //         decoration: BoxDecoration(
+                              //           borderRadius: BorderRadius.circular(10),
+                              //           border: Border.all(
+                              //             color:
+                              //                 Color(CustomColors.GREEN_BUTTON),
+                              //             width: 1.5,
+                              //           ),
+                              //         ),
+                              //         child: Padding(
+                              //           padding: const EdgeInsets.only(
+                              //             top: 9,
+                              //             bottom: 9,
+                              //             left: 35,
+                              //             right: 35,
+                              //           ),
+                              //           child: Text(
+                              //             'Parking Photos',
+                              //             style: TextStyle(
+                              //               fontWeight: FontWeight.w600,
+                              //               color: Colors.black,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -940,7 +1114,6 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
   }
 
   void _addNearestMarkers(LatLng center, int count) async {
-
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     print('listsize---' + _points.length.toString());
@@ -962,12 +1135,15 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
     setState(() {
       _markers.clear();
       _markerValues.clear();
-      this.destination = LatLng(_points.elementAt(0).point.latitude, _points.elementAt(0).point.longitude);
-      sharedPreferences.setDouble(Constants.TARGET_LAT, _points.elementAt(0).point.latitude);
-      sharedPreferences.setDouble(Constants.TARGET_LONG, _points.elementAt(0).point.longitude);
+      this.destination = LatLng(_points.elementAt(0).point.latitude,
+          _points.elementAt(0).point.longitude);
+      sharedPreferences.setDouble(
+          Constants.TARGET_LAT, _points.elementAt(0).point.latitude);
+      sharedPreferences.setDouble(
+          Constants.TARGET_LONG, _points.elementAt(0).point.longitude);
       // for (var point in _points) {
       int size = _points.length;
-      for(int i = 0 ; i < size ; i++){
+      for (int i = 0; i < size; i++) {
         var point = _points.elementAt(i);
         String parkingSpaceID = point.parkingSpaceID;
         print('markerID---' + parkingSpaceID);
@@ -989,8 +1165,8 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
             markerId: MarkerId(parkingSpaceID),
             position: point.point,
             icon: BitmapDescriptor.defaultMarker,
-            onTap: () => _scrollController.scrollTo(index: i, duration: Duration(milliseconds: 100))
-            ,
+            onTap: () => _scrollController.scrollTo(
+                index: i, duration: Duration(milliseconds: 100)),
           ),
         );
       }
@@ -1026,23 +1202,6 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
 
     CameraUpdate cameraUpdate = CameraUpdate.newLatLngBounds(bounds, 50);
     _googleMapController?.animateCamera(cameraUpdate);
-  }
-
-  void _onMarkerTapped(
-      String parkingSpaceID, String distance, LatLng destination) async{
-    print('location---' + parkingSpaceID);
-
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
-    setState(() {
-      isFetchingParkingInfo = true;
-      isVisibleFirstCard = false;
-      isVisibleSecondCard = true;
-      this.destination = destination;
-      sharedPreferences.setDouble(Constants.TARGET_LAT, destination.latitude);
-      sharedPreferences.setDouble(Constants.TARGET_LONG, destination.longitude);
-    });
-    fetchParkingSpaceInfo(parkingSpaceID, distance);
   }
 
   void fetchParkingSpaceInfo(String parkingSpaceID, String distance) async {
@@ -1122,10 +1281,10 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
 
     tempMarkers.add(
       Marker(
-          markerId: MarkerId('destination'),
-          position: destination,
-          icon: BitmapDescriptor.defaultMarker,
-          ),
+        markerId: MarkerId('destination'),
+        position: destination,
+        icon: BitmapDescriptor.defaultMarker,
+      ),
     );
 
     var response = await Dio().get(url);
@@ -1158,76 +1317,88 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
   }
 
   Future<void> getLocationList() async {
-
     await fetchLocation();
 
     checkIfReached();
 
-    try{
-
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
-
-    setState(() {
-      lat = sharedPreferences.getDouble(Constants.LATITUDE)!;
-      long = sharedPreferences.getDouble(Constants.LONGITUDE)!;
-      city = sharedPreferences.getString(Constants.CITY)!;
-      origin = LatLng(lat, long);
-    });
-
-    final dio = Dio(BaseOptions(contentType: "application/json"));
-    dio.interceptors.add(AuthInterceptor(accessToken!));
-
-    final ApiService apiService = ApiService(dio);
-    print('userid--' + accessToken!);
-
     try {
-      print('responseerly');
-      final response = await apiService.getParkingSpaceList(sharedPreferences.getString(Constants.CITY)!);
-      print('response-->');
-      print(response);
-
-      int size = response.length;
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
 
       setState(() {
-        parkingLocationList = response;
+        lat = sharedPreferences.getDouble(Constants.LATITUDE)!;
+        long = sharedPreferences.getDouble(Constants.LONGITUDE)!;
+        city = sharedPreferences.getString(Constants.CITY)!;
+        origin = LatLng(lat, long);
       });
 
-      List<PointsModel> points = [];
+      final dio = Dio(BaseOptions(contentType: "application/json"));
+      dio.interceptors.add(AuthInterceptor(accessToken!));
 
-      for (int i = 0; i < size; i++) {
-        var item = parkingLocationList.elementAt(i);
+      final ApiService apiService = ApiService(dio);
+      print('userid--' + accessToken!);
 
-        final distanceDouble = await DistanceCalculator().getDistance(
-          origin: origin,
-          destination:
-              LatLng(double.parse(item.latitude!), double.parse(item.longitude!)),
-        );
+      try {
+        final response = await apiService
+            .getParkingSpaceList(sharedPreferences.getString(Constants.CITY)!);
 
-        if (distanceDouble == null) {
-          continue;
+        int size = response.length;
+
+        setState(() {
+          parkingLocationList = response;
+        });
+
+        List<PointsModel> points = [];
+
+        for (int i = 0; i < size; i++) {
+          var item = parkingLocationList.elementAt(i);
+
+          final distanceDouble = await DistanceCalculator().getDistance(
+            origin: origin,
+            destination: LatLng(
+                double.parse(item.latitude!), double.parse(item.longitude!)),
+          );
+
+          if (distanceDouble == null) {
+            continue;
+          }
+
+          // Convert list of maps to JSON string
+          String jsonString = jsonEncode(item.parkingImages);
+
+          // Print the JSON string
+          print(" ksdkcs -->" + jsonString);
+
+          print("disapi--" + distanceDouble.toString());
+
+          print('lati---' + item.latitude! + "--" + item.parkingSpaceName!);
+
+          points.add(PointsModel(
+              LatLng(
+                  double.parse(item.latitude!), double.parse(item.longitude!)),
+              item.parkingSpaceID!,
+              distanceDouble,
+              parkingImages: item.parkingImages)); // Fixed issue
         }
 
-        points.add(PointsModel(
-            LatLng(double.parse(item.latitude!), double.parse(item.longitude!)),
-            item.parkingSpaceID!,
-            distanceDouble));
+        points.sort((a, b) => a.distance.compareTo(b.distance));
+
+        // Limit the list to the top 5 elements (closest points)
+        int limit = points.length < 5 ? points.length : 5;
+        List<PointsModel> closestPoints = points.sublist(0, limit);
+
+        _points = closestPoints;
+        _addNearestMarkers(origin, 5);
+      } on DioException catch (e) {
+        setState(() {
+          errorMessageFetchParkingSpaceInfo = e.response?.data;
+        });
+
+        print("errorMessage---" + errorMessageFetchParkingSpaceInfo.toString());
+        CommonUtil().showToast(errorMessageFetchParkingSpaceInfo);
       }
-
-      List<PointsModel> closestPoints = points;
-
-      _points = closestPoints;
-      _addNearestMarkers(origin, 5);
-    } on DioException catch (e) {
-      setState(() {
-        errorMessageFetchParkingSpaceInfo = e.response?.data;
-      });
-
-      print("errorMessage---" + errorMessageFetchParkingSpaceInfo.toString());
-      CommonUtil().showToast(errorMessageFetchParkingSpaceInfo);
-    }
-    }catch(e){
-      print('exception-->' + e.toString());
+    } catch (e) {
       setState(() {
         errorMessageFetchParkingSpaceInfo = Constants.GENERIC_ERROR_MESSAGE;
       });
@@ -1246,19 +1417,20 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
     }
   }
 
-  Future<void> fetchLocation() async{
-    GeoLocator.Position position = await GeoLocator.Geolocator.getCurrentPosition(
-        desiredAccuracy: GeoLocator.LocationAccuracy.high);
+  Future<void> fetchLocation() async {
+    GeoLocator.Position position =
+        await GeoLocator.Geolocator.getCurrentPosition(
+            desiredAccuracy: GeoLocator.LocationAccuracy.high);
 
     // Get the address from coordinates
     List<Placemark> placemarks =
-    await placemarkFromCoordinates(position.latitude, position.longitude);
+        await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark place = placemarks[0];
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setDouble(Constants.LATITUDE,position.latitude);
-    sharedPreferences.setDouble(Constants.LONGITUDE,position.longitude);
-    sharedPreferences.setString(Constants.CITY,place.locality!);
-    print('city---'+place.locality!);
+    sharedPreferences.setDouble(Constants.LATITUDE, position.latitude);
+    sharedPreferences.setDouble(Constants.LONGITUDE, position.longitude);
+    sharedPreferences.setString(Constants.CITY, place.locality!);
+    print('city---' + place.locality!);
     CommonUtil().showToast(place.locality!);
     var originIcon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(size: Size(40, 40)),
@@ -1275,29 +1447,121 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
       lat = position.latitude;
       long = position.longitude;
       origin = LatLng(position.latitude, position.longitude);
-      _markers=tempMarkers;
+      _markers = tempMarkers;
     });
   }
 
-  void checkIfReached() async{
+  void checkIfReached() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final distanceDouble = await DistanceCalculator().getDistance(
       origin: origin,
-      destination:
-      LatLng(sharedPreferences.getDouble(Constants.TARGET_LAT)!, sharedPreferences.getDouble(Constants.TARGET_LONG)!),
+      destination: LatLng(sharedPreferences.getDouble(Constants.TARGET_LAT)!,
+          sharedPreferences.getDouble(Constants.TARGET_LONG)!),
     );
     print('currentdistance--' + distanceDouble.toString());
-    if((distanceDouble! * 1000) < 100){
-      if(isReachedDialogVisible == false){
-          setState(() {
-            isReachedDialogVisible = true;
-          });
+    if ((distanceDouble! * 1000) < 100) {
+      if (isReachedDialogVisible == false) {
+        setState(() {
+          isReachedDialogVisible = true;
+        });
       }
     }
-
   }
 
-  Widget showPaymentSuccessDialogFunction(){
+  void _searchParkingDestination(String query) async {
+    if (query.isEmpty) {
+      CommonUtil().showToast("Please enter a valid destination.");
+      return;
+    }
+
+    // Geocode the entered location to get coordinates
+    LatLng? locationCoordinates = await _getCoordinatesFromAddress(query);
+    if (locationCoordinates == null) {
+      CommonUtil().showToast("Unable to find the entered location.");
+      return;
+    }
+
+    // Move the map to the new location
+    _googleMapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(locationCoordinates, 14),
+    );
+
+    // Fetch nearby parking locations for the new area
+    fetchNearbyParking(locationCoordinates);
+  }
+
+  Future<LatLng?> _getCoordinatesFromAddress(String address) async {
+    String apiKey =
+        Constants.GOOGLE_MAP_API_KEY; // Replace with your Google API key
+    final String url =
+        "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
+
+    try {
+      final response = await Dio().get(url);
+      if (response.statusCode == 200) {
+        final results = response.data['results'];
+        if (results.isNotEmpty) {
+          final location = results[0]['geometry']['location'];
+          return LatLng(location['lat'], location['lng']);
+        }
+      }
+    } catch (e) {
+      print("Geocoding Error: $e");
+    }
+    return null;
+  }
+
+  void fetchNearbyParking(LatLng center) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
+
+    if (accessToken == null) {
+      CommonUtil().showToast("Access token is missing.");
+      return;
+    }
+
+    final dio = Dio(BaseOptions(contentType: "application/json"));
+    dio.interceptors.add(AuthInterceptor(accessToken));
+
+    final ApiService apiService = ApiService(dio);
+
+    try {
+      // Fetch parking locations for the new area
+      final List<ParkingLocationResponse> response = await apiService
+          .getParkingSpaceList(sharedPreferences.getString(Constants.CITY)!);
+
+      List<PointsModel> points = response.map((item) {
+        final distance = DistanceCalculator().getDistance(
+          origin: center,
+          destination: LatLng(
+            double.parse(item.latitude!),
+            double.parse(item.longitude!),
+          ),
+        );
+
+        return PointsModel(
+          LatLng(double.parse(item.latitude!), double.parse(item.longitude!)),
+          item.parkingSpaceID!,
+          distance as double,
+          parkingImages: item.parkingImages, // Use the parsed list directly
+        );
+      }).toList();
+
+      // Sort points by distance
+      points.sort((a, b) => a.distance.compareTo(b.distance));
+
+      setState(() {
+        _points = points;
+        _addNearestMarkers(center, points.length);
+      });
+    } catch (e) {
+      print("Error fetching nearby parking locations: $e");
+      CommonUtil().showToast("Error fetching nearby parking locations.");
+    }
+  }
+
+  Widget showPaymentSuccessDialogFunction() {
+    double parentheight = MediaQuery.of(context).size.height;
     return Padding(
       padding: const EdgeInsets.all(40.0),
       child: Material(
@@ -1318,97 +1582,89 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
               ),
             ),
             Container(
-              height: 400,
+              height: parentheight * 0.49,
               margin: EdgeInsets.only(top: 150),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    //blurRadius: 7, // Adjust the blur radius of the shadow
+                    blurRadius: 7, // Adjust the blur radius of the shadow
                     offset: Offset(0, 3), // Offset of the shadow
                   ),
                 ],
               ),
               child: Column(
                 children: [
-                  Stack(
-                    children: [
-                      Container(
-                        child: Padding(
-                            padding: EdgeInsets.all(50),
-                            child: Image(
-                              image: AssetImage('assets/images/tick.png'),
-                            )),
-                      ),
-                      Positioned(
-                          top: 40,
-                          left: 50,
-                          child: Container(
-                            height: 20,
-                            width: 20,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
-                          )),
-                      Positioned(
-                          top: 130,
-                          left: 40,
-                          child: Container(
-                            height: 12,
-                            width: 12,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
-                          )),
-                      Positioned(
-                          top: 170,
-                          left: 100,
-                          child: Container(
-                            height: 10,
-                            width: 10,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
-                          )),
-                      Positioned(
-                          top: 170,
-                          right: 70,
-                          child: Container(
-                            height: 5,
-                            width: 5,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
-                          )),
-                      Positioned(
-                          top: 130,
-                          right: 50,
-                          child: Container(
-                            height: 8,
-                            width: 8,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
-                          )),
-                      Positioned(
-                          top: 33,
-                          right: 50,
-                          child: Container(
-                            height: 15,
-                            width: 15,
-                            decoration: BoxDecoration(
-                                color: Color(CustomColors.GREEN_BUTTON),
-                                borderRadius: BorderRadius.circular(20)
-                            ),
-                          )),
-                    ],
+                  Container(
+                    child: Stack(
+                      children: [
+                        Image(
+                          image: AssetImage('assets/images/Success.gif'),
+                        ),
+                        // Positioned(
+                        //     top: 40,
+                        //     left: 50,
+                        //     child: Container(
+                        //       height: 20,
+                        //       width: 20,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 130,
+                        //     left: 40,
+                        //     child: Container(
+                        //       height: 12,
+                        //       width: 12,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 170,
+                        //     left: 100,
+                        //     child: Container(
+                        //       height: 10,
+                        //       width: 10,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 170,
+                        //     right: 70,
+                        //     child: Container(
+                        //       height: 5,
+                        //       width: 5,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 130,
+                        //     right: 50,
+                        //     child: Container(
+                        //       height: 8,
+                        //       width: 8,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                        // Positioned(
+                        //     top: 33,
+                        //     right: 50,
+                        //     child: Container(
+                        //       height: 15,
+                        //       width: 15,
+                        //       decoration: BoxDecoration(
+                        //           color: Color(CustomColors.GREEN_BUTTON),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //     )),
+                      ],
+                    ),
                   ),
                   Container(
                     child: Text(
@@ -1420,37 +1676,51 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 20),
+                    margin: EdgeInsets.only(top: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          child: ElevatedButton(onPressed: (){
-                            setState(() {
-                              isReachedDialogVisible = false;
-                            });
-                          }, child: Text('Close', style: TextStyle(color: Colors.black)),style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  10.0), // Set border radius
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                isReachedDialogVisible = false;
+                              });
+                            },
+                            child: Text('Close',
+                                style: TextStyle(color: Colors.black)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10.0), // Set border radius
+                              ),
                             ),
-                          ),),
+                          ),
                         ),
                         Container(
                           margin: EdgeInsets.only(left: 20),
-                          child: ElevatedButton(onPressed: (){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyQr()));
-                          }, child: Text('Show QR', style: TextStyle(color: Colors.white),),style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(CustomColors.GREEN_BUTTON),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  10.0), // Set border radius
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MyQr()));
+                            },
+                            child: Text(
+                              'Show QR',
+                              style: TextStyle(color: Colors.white),
                             ),
-                          ),),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(CustomColors.GREEN_BUTTON)
+                                  .withOpacity(0.9),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10.0), // Set border radius
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -1464,36 +1734,29 @@ class _HomeFragmentState extends State<HomeFragment> with WidgetsBindingObserver
     );
   }
 
-  void getDefaultVehicleDetails() async{
-
+  void getDefaultVehicleDetails() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     defaultVehicleNo = sharedPreferences.getString(Constants.VEHICLE_NO) ?? "";
 
-    String defualtVehicleType = sharedPreferences.getString(Constants.VEHICLE_TYPE) ?? "";
-    if(defaultVehicleNo == "" || defualtVehicleType == ""){
+    String defualtVehicleType =
+        sharedPreferences.getString(Constants.VEHICLE_TYPE) ?? "";
+    if (defaultVehicleNo == "" || defualtVehicleType == "") {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => PostLoginScreen()));
       return;
     }
     print('defaultVehicleHome-->' + defualtVehicleType);
 
-
-    if(defualtVehicleType == 'Car'){
+    if (defualtVehicleType == 'Car') {
       defaultVehicleTypeUri += 'car.png';
-    }
-    else if(defualtVehicleType == 'Bike'){
+    } else if (defualtVehicleType == 'Bike') {
       defaultVehicleTypeUri += 'bike.png';
-    }
-    else if(defualtVehicleType == 'Heavy Vehicle'){
+    } else if (defualtVehicleType == 'Heavy Vehicle') {
       defaultVehicleTypeUri += 'truck.png';
-    }
-    else{
+    } else {
       defaultVehicleTypeUri += 'cycle.png';
     }
-    setState(() {
-
-    });
-
+    setState(() {});
   }
 }
