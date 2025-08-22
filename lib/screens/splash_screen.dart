@@ -10,11 +10,9 @@ import 'package:parkey_customer/screens/login_screen.dart';
 import 'package:parkey_customer/utils/Constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Clippers/login_screen_clipper1.dart';
-import '../Clippers/login_screen_clipper2.dart';
-import 'package:location/location.dart' as location;
 import '../colors/CustomColors.dart';
 import 'home_screen.dart';
+import 'package:location/location.dart' as location;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,26 +22,63 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with WidgetsBindingObserver {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   bool _disposed = false;
-  var _logoWidth = 170.0;
-  var _logoHeight = 150.0;
+
+  late AnimationController _logoController;
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+
+  late Animation<double> _logoScaleAnimation;
+  late Animation<double> _logoRotateAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+    _logoController = AnimationController(
+      duration: Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    _fadeController = AnimationController(
+      duration: Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _slideController = AnimationController(
+      duration: Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
+    );
+
+    _logoRotateAnimation = Tween<double>(begin: 0.0, end: 0.1).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
 
     handlePermissions();
     WidgetsBinding.instance.addObserver(this);
 
-    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
-      if (!_disposed) {
-        setState(() {
-          _logoHeight = 250.0;
-          _logoWidth = 270.0;
-        });
-      }
+    _fadeController.forward();
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (!_disposed) _logoController.forward();
+    });
+    Future.delayed(Duration(milliseconds: 800), () {
+      if (!_disposed) _slideController.forward();
     });
   }
 
@@ -51,22 +86,22 @@ class _SplashScreenState extends State<SplashScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // The app is resumed
       onResume();
     }
   }
 
   void onResume() {
     handlePermissions();
-    // Your custom logic here
     print('App resumed');
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    WidgetsBinding.instance.removeObserver(this);
     _disposed = true;
+    _logoController.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -76,91 +111,87 @@ class _SplashScreenState extends State<SplashScreen>
     double widthParent = MediaQuery.of(context).size.width;
 
     return SafeArea(
-        child: Material(
-            child: Stack(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ClipPath(
-              clipper: LoginScreenClipper1(),
-              child: Container(
-                height: 150,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(CustomColors.PURPLE_LIGHT),
-                    Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
-                  ],
-                )),
-              ),
-            ),
-            ClipPath(
-              clipper: LoginScreenClipper2(),
-              child: Container(
-                height: heightParent - 200,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
-                    Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
-                  ],
-                )),
-              ),
-            ),
-          ],
-        ),
-        Container(
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: Container(
+          width: widthParent,
+          height: heightParent,
           decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20.0),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(CustomColors.PURPLE_DARK).withOpacity(0.1),
+                Colors.grey[50]!,
+              ],
+            ),
           ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              color: Colors.transparent,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildAnimatedLogo(),
+                SizedBox(height: 50),
+                _buildCompanyName(),
+              ],
             ),
           ),
         ),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                  child: AnimatedContainer(
-                duration: Duration(seconds: 2),
-                width: _logoWidth,
-                height: _logoHeight,
-                curve: Curves.easeInOut,
-                child: Image(
-                  height: 150,
-                  width: 150,
-                  fit: BoxFit.fill,
-                  image: AssetImage('assets/images/app_logo.png'),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedLogo() {
+    return AnimatedBuilder(
+      animation: _logoController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _logoScaleAnimation.value,
+          child: Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Color(CustomColors.PURPLE_DARK).withOpacity(0.2),
+                  blurRadius: 25,
+                  offset: Offset(0, 10),
                 ),
-              )),
-              Center(
-                child: Container(
-                  child: Text(
-                    'Parking Junction Private Limited',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 17),
-                  ),
-                ),
-              )
-            ],
+              ],
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(15),
+              child: Image.asset(
+                'assets/images/app_logo.png',
+                fit: BoxFit.cover,
+                height: 100,
+              ),
+            ),
           ),
-        )
-      ],
-    )));
+        );
+      },
+    );
+  }
+
+  Widget _buildCompanyName() {
+    return SlideTransition(
+      position: _slideAnimation,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Text(
+          'Parking Junction Private Limited',
+          style: TextStyle(
+            fontSize: 18,
+            fontFamily: "Poppins-Bold",
+            color: Colors.black87,
+            letterSpacing: 0.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 
   void handlePermissions() async {
@@ -184,21 +215,27 @@ class _SplashScreenState extends State<SplashScreen>
 
           if (sharedPreferences.getString(Constants.ACCESS_TOKEN) != null) {
             print(sharedPreferences.getString("accessToken"));
-            String? accessToken =
-                sharedPreferences.getString(Constants.ACCESS_TOKEN);
+            String? accessToken = sharedPreferences.getString(
+              Constants.ACCESS_TOKEN,
+            );
 
             Future.delayed(Duration(seconds: 4), () {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (_) => HomeScreen(
-                        index: 0,
-                        path: '/',
-                      )));
+              if (!_disposed) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => HomeScreen(index: 0, path: '/'),
+                  ),
+                );
+              }
             });
           } else {
             print("splashPre");
             Future.delayed(Duration(seconds: 4), () {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => LoginScreen()));
+              if (!_disposed) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => LoginScreen()),
+                );
+              }
             });
           }
         }
@@ -209,21 +246,27 @@ class _SplashScreenState extends State<SplashScreen>
 
         if (sharedPreferences.getString(Constants.ACCESS_TOKEN) != null) {
           print(sharedPreferences.getString("accessToken"));
-          String? accessToken =
-              sharedPreferences.getString(Constants.ACCESS_TOKEN);
+          String? accessToken = sharedPreferences.getString(
+            Constants.ACCESS_TOKEN,
+          );
 
           Future.delayed(Duration(seconds: 4), () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (_) => HomeScreen(
-                      index: 0,
-                      path: '/',
-                    )));
+            if (!_disposed) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (_) => HomeScreen(index: 0, path: '/'),
+                ),
+              );
+            }
           });
         } else {
           print("splashPre");
           Future.delayed(Duration(seconds: 4), () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => LoginScreen()));
+            if (!_disposed) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => LoginScreen()),
+              );
+            }
           });
         }
       }
@@ -301,8 +344,10 @@ class _SplashScreenState extends State<SplashScreen>
       sharedPreferences.setDouble(Constants.LATITUDE, position.latitude);
       sharedPreferences.setDouble(Constants.LONGITUDE, position.longitude);
       print('Current position: ${position.latitude}, ${position.longitude}');
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks.first;
         String city = placemark.locality ?? '';
@@ -325,7 +370,5 @@ class _SplashScreenState extends State<SplashScreen>
       );
       return false;
     }
-
-    return true;
   }
 }

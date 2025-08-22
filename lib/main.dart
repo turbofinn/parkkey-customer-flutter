@@ -1,16 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parkey_customer/Fragment/ProfileFragment.dart';
-import 'package:parkey_customer/Fragment/add_vehicle_fragment.dart';
-import 'package:parkey_customer/Fragment/dedicated_history_fragment.dart';
-import 'package:parkey_customer/Fragment/history_fragment.dart';
-import 'package:parkey_customer/screens/home_screen.dart';
-import 'package:parkey_customer/screens/login_screen.dart';
-import 'package:parkey_customer/screens/my_qr_screen.dart';
-import 'package:parkey_customer/screens/payment_screen.dart';
-import 'package:parkey_customer/screens/post_login_screen.dart';
 import 'package:parkey_customer/screens/splash_screen.dart';
-import 'Fragment/parked_vehicles_fragment.dart';
-import 'HomeFragment.dart' hide Widget;
 
 void main() {
   runApp(const MyApp());
