@@ -340,11 +340,8 @@ class ProfileFragmentState extends State<ProfileFragment> {
               title: 'Update Vehicle',
               subtitle: 'Modify your vehicle details',
               onTap: () {
-                Navigator.of(widget.context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        HomeScreen(index: -1, path: '/AddVehicle'),
-                  ),
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => AddVehicleFragment()),
                 );
               },
             ),

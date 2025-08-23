@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ParkedVehicleFragmentBase(),
       WalletFragment(),
       HistoryFragment(),
-      ProfileFragmentBase(context: context, path: widget.path),
+      ProfileFragment(context: context),
     ];
 
     return PopScope(
@@ -70,11 +70,13 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Scaffold(
         backgroundColor: Colors.grey.shade50,
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          onPageChanged: _onPageChanged,
-          children: tabs,
+        body: SafeArea(
+          child: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            onPageChanged: _onPageChanged,
+            children: tabs,
+          ),
         ),
         bottomNavigationBar: _buildBottomNavigationBar(),
       ),

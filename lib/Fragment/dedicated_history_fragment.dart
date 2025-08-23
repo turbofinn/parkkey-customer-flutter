@@ -110,20 +110,20 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment>
                 ),
               ),
               Expanded(
-                child: SingleChildScrollView(
+                child: Center(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: isLoading
                         ? Container(
                             padding: EdgeInsets.all(32),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 30,
-                                  offset: Offset(0, 15),
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 20,
+                                  offset: Offset(0, 10),
                                 ),
                               ],
                             ),
@@ -153,14 +153,16 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment>
                             ),
                           )
                         : Container(
+                            width: double.infinity,
+                            constraints: BoxConstraints(maxWidth: 350),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 30,
-                                  offset: Offset(0, 15),
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 20,
+                                  offset: Offset(0, 10),
                                 ),
                               ],
                             ),
@@ -173,11 +175,9 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment>
                                   children: [
                                     Container(
                                       width: double.infinity,
-                                      padding: EdgeInsets.all(24),
+                                      padding: EdgeInsets.all(20),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
                                           colors: [
                                             Color(CustomColors.GREEN_BUTTON),
                                             Color(
@@ -186,46 +186,43 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment>
                                           ],
                                         ),
                                         borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(24),
-                                          topRight: Radius.circular(24),
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
                                         ),
                                       ),
                                       child: Row(
                                         children: [
                                           Container(
-                                            width: 50,
-                                            height: 50,
-                                            padding: EdgeInsets.all(10),
+                                            width: 40,
+                                            height: 40,
                                             decoration: BoxDecoration(
                                               color: Colors.white.withOpacity(
                                                 0.2,
                                               ),
                                               borderRadius:
-                                                  BorderRadius.circular(15),
+                                                  BorderRadius.circular(12),
                                             ),
-                                            child: Image.asset(
-                                              'assets/images/logo.png',
-                                              fit: BoxFit.contain,
+                                            child: Icon(
+                                              Icons.directions_car,
+                                              color: Colors.white,
+                                              size: 20,
                                             ),
                                           ),
-                                          SizedBox(width: 16),
-                                          Expanded(
-                                            child: Text(
-                                              'PARKING TICKET',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontFamily: "Poppins-Bold",
-                                                color: Colors.white,
-                                                letterSpacing: 1,
-                                              ),
+                                          SizedBox(width: 12),
+                                          Text(
+                                            'PARKING TICKET',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "Poppins-Bold",
+                                              color: Colors.white,
+                                              letterSpacing: 1,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
 
-                                    Container(
-                                      width: double.infinity,
+                                    Padding(
                                       padding: EdgeInsets.all(20),
                                       child: Column(
                                         children: [
@@ -266,89 +263,66 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment>
                                             duration,
                                             'Duration',
                                           ),
-                                        ],
-                                      ),
-                                    ),
+                                          SizedBox(height: 20),
 
-                                    Container(
-                                      width: double.infinity,
-                                      margin: EdgeInsets.fromLTRB(
-                                        20,
-                                        0,
-                                        20,
-                                        20,
-                                      ),
-                                      padding: EdgeInsets.all(28),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            Color(CustomColors.GREEN_BUTTON),
-                                            Color(
-                                              CustomColors.GREEN_BUTTON,
-                                            ).withOpacity(0.8),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.circular(20),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Color(
-                                              CustomColors.GREEN_BUTTON,
-                                            ).withOpacity(0.4),
-                                            blurRadius: 20,
-                                            offset: Offset(0, 10),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Icon(
-                                            Icons.key_outlined,
-                                            color: Colors.white,
-                                            size: 32,
-                                          ),
-                                          SizedBox(height: 12),
-                                          Text(
-                                            'EXIT OTP',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "Poppins-Bold",
-                                              color: Colors.white,
-                                              letterSpacing: 1.5,
-                                            ),
-                                          ),
-                                          SizedBox(height: 16),
                                           Container(
                                             width: double.infinity,
                                             padding: EdgeInsets.symmetric(
-                                              horizontal: 24,
                                               vertical: 16,
+                                              horizontal: 20,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: Color(
+                                                CustomColors.GREEN_BUTTON,
+                                              ).withOpacity(0.1),
                                               borderRadius:
-                                                  BorderRadius.circular(16),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.1),
-                                                  blurRadius: 8,
-                                                  offset: Offset(0, 4),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Text(
-                                              otp,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 36,
-                                                fontFamily: "Poppins-Bold",
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
                                                 color: Color(
                                                   CustomColors.GREEN_BUTTON,
-                                                ),
-                                                letterSpacing: 8,
+                                                ).withOpacity(0.2),
+                                                width: 1,
                                               ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.key,
+                                                      color: Color(
+                                                        CustomColors
+                                                            .GREEN_BUTTON,
+                                                      ),
+                                                      size: 20,
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      'Exit OTP',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontFamily:
+                                                            "Poppins-Medium",
+                                                        color: Colors.black87,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  otp,
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontFamily: "Poppins-Bold",
+                                                    color: Color(
+                                                      CustomColors.GREEN_BUTTON,
+                                                    ),
+                                                    letterSpacing: 2,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
@@ -373,15 +347,15 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment>
     return Row(
       children: [
         Container(
-          width: 40,
-          height: 40,
+          width: 32,
+          height: 32,
           decoration: BoxDecoration(
             color: Color(CustomColors.GREEN_BUTTON).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: Color(CustomColors.GREEN_BUTTON), size: 20),
+          child: Icon(icon, color: Color(CustomColors.GREEN_BUTTON), size: 16),
         ),
-        SizedBox(width: 16),
+        SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,16 +363,15 @@ class _DedicatedHistoryFragmentState extends State<DedicatedHistoryFragment>
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   fontFamily: "Poppins",
                   color: Colors.black54,
                 ),
               ),
-              SizedBox(height: 2),
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontFamily: "Poppins-SemiBold",
                   color: Colors.black87,
                 ),

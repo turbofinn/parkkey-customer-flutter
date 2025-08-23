@@ -31,186 +31,263 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    // TODO: implement build
+
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        toolbarHeight: 77,
-        leading: Container(
-            margin: EdgeInsets.only(top: 18, left: 10, bottom: 17),
-            height: 2,
-            width: 20,
-            decoration: BoxDecoration(
-                color: Color(CustomColors.PURPLE_DARK),
-                borderRadius: BorderRadius.circular(10)),
-            child: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back_outlined,
-                  color: Colors.white,
-                ))),
-        title: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(
-                'Edit Profile',
-                style: TextStyle(
-                    fontSize: 23,
-                    fontWeight: FontWeight.bold,
-                    color: Color(CustomColors.PURPLE_DARK)),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 0.01),
-              // child: Text(
-              //   'Add new Vehicle',
-              //   style: TextStyle(
-              //       fontSize: 15, color: Colors.grey.withOpacity(0.9)),
-              // ),
-            )
-          ],
-        ),
-        centerTitle: true,
-      ),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          Color(CustomColors.PURPLE_LIGHT).withOpacity(0.01),
-          Color(CustomColors.PURPLE_DARK).withOpacity(0.2)
-        ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(CustomColors.PURPLE_DARK).withOpacity(0.1),
+              Colors.grey[50]!,
+            ],
+          ),
+        ),
         child: SafeArea(
-          child: Container(
-            margin: EdgeInsets.only(top: screenWidth * 0.1),
-            width: screenWidth * 1,
-            // height: screenHeight * 0.55,
-            //  color: Colors.red,
-            child: Column(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: screenWidth * 0.87,
-                  child: TextFormField(
-                    controller: customerNameInputController,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.person_2_outlined,
-                          color: Color(CustomColors.GREEN_DARK),
-                          size: 25,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(18),
                         ),
-                        labelStyle: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
-                        labelText: 'Enter Name',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color(CustomColors.GREEN_DARK), width: 2),
-                          borderRadius: BorderRadius.circular(15),
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.black,
+                          size: 18,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color(CustomColors.GREEN_DARK),
-                              width: 1.5),
-                          borderRadius: BorderRadius.circular(15),
-                        )),
-                  ),
-                ),
-                SizedBox(
-                  height: screenHeight * 0.04,
-                ),
-                Container(
-                  width: screenWidth * 0.87,
-                  child: TextFormField(
-                    controller: genderInputController,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.female_sharp,
-                          color: Color(CustomColors.GREEN_DARK),
-                          size: 25,
-                        ),
-                        labelStyle: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
-                        labelText: 'Enter Gender',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color(CustomColors.GREEN_DARK), width: 2),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color(CustomColors.GREEN_DARK),
-                              width: 1.5),
-                          borderRadius: BorderRadius.circular(15),
-                        )),
-                  ),
-                ),
-                SizedBox(
-                  height: screenHeight * 0.03,
-                ),
-                Container(
-                  width: screenWidth * 0.87,
-                  child: TextFormField(
-                    controller: emailIDInputController,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.mail,
-                          color: Color(CustomColors.GREEN_DARK),
-                          size: 25,
-                        ),
-                        labelStyle: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
-                        labelText: 'Enter Email address',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color(CustomColors.GREEN_DARK), width: 2),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color(CustomColors.GREEN_DARK),
-                              width: 1.5),
-                          borderRadius: BorderRadius.circular(15),
-                        )),
-                  ),
-                ),
-                SizedBox(
-                  height: screenHeight * 0.02,
-                ),
-                Container(
-                  width: screenWidth * 0.6,
-                  margin: EdgeInsets.only(top: 20),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      updateCustomerDetails();
-                    },
-                    child: Container(
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                            color: const Color.fromARGB(255, 244, 241, 241),
-                            fontSize: 15),
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color(CustomColors.GREEN_DARK).withOpacity(0.5),
-                      side: BorderSide(
-                        color: Color(CustomColors.GREEN_DARK),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          'Edit Profile',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Poppins-SemiBold",
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    SizedBox(width: 36),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Container(
+                        width: double.infinity,
+                        constraints: BoxConstraints(maxWidth: 400),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 20,
+                              offset: Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(28),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(CustomColors.GREEN_DARK),
+                                      Color(
+                                        CustomColors.GREEN_DARK,
+                                      ).withOpacity(0.8),
+                                    ],
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                              ),
+                              SizedBox(height: 24),
+
+                              _buildInputField(
+                                controller: customerNameInputController,
+                                label: 'Full Name',
+                                icon: Icons.person_outline,
+                                hint: 'Enter your full name',
+                              ),
+                              SizedBox(height: 20),
+
+                              _buildInputField(
+                                controller: genderInputController,
+                                label: 'Gender',
+                                icon: Icons.wc_outlined,
+                                hint: 'Enter gender',
+                              ),
+                              SizedBox(height: 20),
+
+                              _buildInputField(
+                                controller: emailIDInputController,
+                                label: 'Email Address',
+                                icon: Icons.email_outlined,
+                                hint: 'Enter email address',
+                              ),
+                              SizedBox(height: 32),
+
+                              SizedBox(
+                                width: double.infinity,
+                                height: 52,
+                                child: ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          updateCustomerDetails();
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(
+                                      CustomColors.GREEN_DARK,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    elevation: 0,
+                                    shadowColor: Colors.transparent,
+                                  ),
+                                  child: isLoading
+                                      ? SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2.5,
+                                          ),
+                                        )
+                                      : Text(
+                                          'Save Changes',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required String hint,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: controller,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+              prefixIcon: Container(
+                margin: EdgeInsets.only(left: 16, right: 12),
+                child: Icon(
+                  icon,
+                  color: Color(CustomColors.GREEN_DARK),
+                  size: 20,
+                ),
+              ),
+              prefixIconConstraints: BoxConstraints(minWidth: 48),
+              filled: true,
+              fillColor: Colors.grey[50],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(CustomColors.GREEN_DARK).withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(CustomColors.GREEN_DARK).withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(CustomColors.GREEN_DARK),
+                  width: 2,
+                ),
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -239,13 +316,15 @@ class _EditProfileState extends State<EditProfile> {
 
       try {
         final response = await apiService.updateCustomerDetails(
-            UpdateCustomerDetailsRequest(
-                'CUSTOMER_APP',
-                userID,
-                genderInputController.text,
-                emailIDInputController.text,
-                '',
-                customerNameInputController.text));
+          UpdateCustomerDetailsRequest(
+            'CUSTOMER_APP',
+            userID,
+            genderInputController.text,
+            emailIDInputController.text,
+            '',
+            customerNameInputController.text,
+          ),
+        );
 
         if (response.message == Constants.MSG_DETAILS_UPDATE_SUCCESSFUL) {
           setState(() {
