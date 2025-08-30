@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:parkey_customer/colors/CustomColors.dart';
@@ -9,6 +11,10 @@ import 'package:parkey_customer/utils/common_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfile extends StatefulWidget {
+  final String name;
+  final String email;
+  const EditProfile({super.key, required this.name, required this.email});
+
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -17,15 +23,22 @@ class _EditProfileState extends State<EditProfile> {
   bool isEditable = false, isLoading = false;
   String customerName = "";
   String mobileNo = "";
-  String gender = "";
+  String gender = 'Male';
   String primaryVehicle = "";
   String emailID = "";
-  final TextEditingController genderInputController = TextEditingController();
   final TextEditingController emailIDInputController = TextEditingController();
   final TextEditingController primaryVehicleInputController =
       TextEditingController();
   final TextEditingController customerNameInputController =
       TextEditingController();
+  final List<String> _genderOptions = ['Male', 'Female', 'Other'];
+
+  @override
+  void initState() {
+    super.initState();
+    emailIDInputController.text = widget.email;
+    customerNameInputController.text = widget.name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +98,6 @@ class _EditProfileState extends State<EditProfile> {
                   ],
                 ),
               ),
-
               Expanded(
                 child: Center(
                   child: SingleChildScrollView(
@@ -131,7 +143,6 @@ class _EditProfileState extends State<EditProfile> {
                                 ),
                               ),
                               SizedBox(height: 24),
-
                               _buildInputField(
                                 controller: customerNameInputController,
                                 label: 'Full Name',
@@ -139,15 +150,8 @@ class _EditProfileState extends State<EditProfile> {
                                 hint: 'Enter your full name',
                               ),
                               SizedBox(height: 20),
-
-                              _buildInputField(
-                                controller: genderInputController,
-                                label: 'Gender',
-                                icon: Icons.wc_outlined,
-                                hint: 'Enter gender',
-                              ),
+                              _buildGenderDropdown(),
                               SizedBox(height: 20),
-
                               _buildInputField(
                                 controller: emailIDInputController,
                                 label: 'Email Address',
@@ -155,7 +159,6 @@ class _EditProfileState extends State<EditProfile> {
                                 hint: 'Enter email address',
                               ),
                               SizedBox(height: 32),
-
                               SizedBox(
                                 width: double.infinity,
                                 height: 52,
@@ -245,6 +248,7 @@ class _EditProfileState extends State<EditProfile> {
               fontWeight: FontWeight.w500,
               color: Colors.black87,
             ),
+
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
@@ -291,13 +295,107 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
+  Widget _buildGenderDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Gender',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: DropdownButtonFormField<String>(
+            value: gender,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Select gender',
+              hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+              prefixIcon: Container(
+                margin: EdgeInsets.only(left: 16, right: 12),
+                child: Icon(
+                  Icons.wc_outlined,
+                  color: Color(CustomColors.GREEN_DARK),
+                  size: 20,
+                ),
+              ),
+              prefixIconConstraints: BoxConstraints(minWidth: 48),
+              filled: true,
+              fillColor: Colors.grey[50],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(CustomColors.GREEN_DARK).withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(CustomColors.GREEN_DARK).withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(CustomColors.GREEN_DARK),
+                  width: 2,
+                ),
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+            ),
+            items: _genderOptions.map((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
+            onChanged: (newValue) {
+              if (newValue != null) {
+                setState(() {
+                  gender = newValue;
+                });
+              }
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please select a gender';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   void updateCustomerDetails() async {
     try {
-      if (genderInputController.text == '' ||
-          emailIDInputController.text == '' ||
-          !emailIDInputController.text.contains("@") ||
-          customerNameInputController.text == '') {
+      if (customerNameInputController.text.isEmpty ||
+          gender == null ||
+          emailIDInputController.text.isEmpty ||
+          !emailIDInputController.text.contains("@gmail.com")) {
         CommonUtil().showToast('Invalid Details');
+        return;
       }
 
       setState(() {
@@ -319,7 +417,7 @@ class _EditProfileState extends State<EditProfile> {
           UpdateCustomerDetailsRequest(
             'CUSTOMER_APP',
             userID,
-            genderInputController.text,
+            gender!,
             emailIDInputController.text,
             '',
             customerNameInputController.text,
@@ -330,6 +428,7 @@ class _EditProfileState extends State<EditProfile> {
           setState(() {
             isEditable = false;
             customerName = customerNameInputController.text;
+            emailID = emailIDInputController.text;
           });
           sharedPreferences.setString(Constants.CUSTOMER_NAME, customerName);
           CommonUtil().showToast('Profile Updated Successfully');
@@ -348,9 +447,15 @@ class _EditProfileState extends State<EditProfile> {
         } else {
           CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
         }
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
       CommonUtil().showToast(Constants.GENERIC_ERROR_MESSAGE);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

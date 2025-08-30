@@ -625,7 +625,7 @@ class _WalletFragmentState extends State<WalletFragment> {
                                 ),
                               ),
                               Text(
-                                transaction.modeOfPayment,
+                                transaction.modeOfPayment.toUpperCase(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -899,7 +899,7 @@ class _WalletFragmentState extends State<WalletFragment> {
       final response = await dio.post(
         "https://xkzd75f5kd.execute-api.ap-south-1.amazonaws.com/prod/razorpay-create-order",
         data: {
-          "amount": 20,
+          "amount": amount,
           "payment_capture": 1,
           "mobileNo": mobileNo,
           "userId": sharedPreferences.getString(Constants.USER_ID),

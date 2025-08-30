@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:parkey_customer/UIComponents/history_item.dart';
@@ -208,7 +209,7 @@ class _HistoryFragmentState extends State<HistoryFragment> {
                   child: isLoading
                       ? _buildLoadingState()
                       : errorMessage.isNotEmpty
-                      ? _buildErrorState()
+                      ? _buildEmptyState()
                       : customerVehicleResponseList.isEmpty
                       ? _buildEmptyState()
                       : _buildVehicleList(),
@@ -536,7 +537,9 @@ class _HistoryFragmentState extends State<HistoryFragment> {
   }
 
   void getCustomerVehicleHistory() async {
-    print("Called");
+    SharedPreferences shared = await SharedPreferences.getInstance();
+    String? userI = shared.getString(Constants.USER_ID);
+    log("Called: $userI");
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -553,7 +556,7 @@ class _HistoryFragmentState extends State<HistoryFragment> {
 
       String jsonString = jsonEncode(response);
 
-      print(" fdvfdv -->" + jsonString);
+      log(" fdvfdv -->$jsonString");
 
       setState(() {
         originalList = response.parkedVehicleHistoryList;
@@ -561,7 +564,7 @@ class _HistoryFragmentState extends State<HistoryFragment> {
         isLoading = false;
       });
     } catch (e) {
-      print(e);
+      log(e.toString());
       setState(() {
         errorMessage = Constants.GENERIC_ERROR_MESSAGE;
         isLoading = false;

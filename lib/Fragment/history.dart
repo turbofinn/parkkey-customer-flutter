@@ -16,18 +16,23 @@ class History extends StatefulWidget {
   String? address, time, date, timer, parkingCharges;
   bool isFromAddVehicle;
   final VoidCallback getVehicleHistory;
+  final Function(String)? onDefaultVehicleChanged;
+  bool isDefault;
   History(
-      this.name,
-      this.vehicleNo,
-      this.vehicleType,
-      this.address,
-      this.time,
-      this.date,
-      this.timer,
-      this.isFromAddVehicle,
-      this.getVehicleHistory,
-      this.parkingCharges,
-      {super.key});
+    this.name,
+    this.vehicleNo,
+    this.vehicleType,
+    this.address,
+    this.time,
+    this.date,
+    this.timer,
+    this.isFromAddVehicle,
+    this.getVehicleHistory,
+    this.parkingCharges, {
+    this.isDefault = false,
+    this.onDefaultVehicleChanged,
+    super.key,
+  });
 
   @override
   State<History> createState() => _History();
@@ -36,13 +41,6 @@ class History extends StatefulWidget {
 class _History extends State<History> {
   bool isLoading = false;
   bool isLoadingDeletion = false;
-  bool isDefaultSet = false;
-
-  @override
-  void initState() {
-    super.initState();
-    checkIfDefaultVehicleSet();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,28 +63,23 @@ class _History extends State<History> {
     } else {
       assetImage += 'cycle.png';
     }
-    return Material(
-        child: Container(
-      // margin: EdgeInsets.all(),
-      margin: EdgeInsets.all(5),
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-              color: Colors.grey,
-
-              // color: Colors.black.withOpacity(0.1),
-              // Adjust the shadow color and opacity
-              blurRadius: 12,
-              offset: Offset(2, 4)
-              // Adjust the blur radius of the shadow
-              //offset: Offset(2, 2,), // Offset of the shadow
-              ),
+            color: Colors.black.withOpacity(0.06),
+            spreadRadius: 0,
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -96,453 +89,466 @@ class _History extends State<History> {
                   height: 70,
                   width: 70,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey.withOpacity(0.3),
-                    // color: Color(CustomColors.GREEN_DARK).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(CustomColors.GREEN_BUTTON).withOpacity(0.1),
+                        Color(CustomColors.PURPLE_LIGHT).withOpacity(0.1),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    border: Border.all(
+                      color: Color(CustomColors.GREEN_BUTTON).withOpacity(0.2),
+                      width: 1,
+                    ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(7),
+                    padding: const EdgeInsets.all(12),
                     child: Image(
-                      height: 55,
-                      width: 55,
+                      height: 46,
+                      width: 46,
                       image: AssetImage(assetImage),
                     ),
                   ),
                 ),
-                // SizedBox(
-                //   height: 12,
-                // ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Container(
-                    //   margin: EdgeInsets.only(left: 30),
-                    //   child: Text(
-                    //     widget.name,
-                    //     style: TextStyle(
-                    //         fontWeight: FontWeight.w600,
-                    //         fontSize: 14,
-                    //         color: Colors.black.withOpacity(0.7)),
-                    //   ),
-                    // ),
-                    Row(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20),
-                              child: Text(
-                                widget.vehicleNo,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                    color: Colors.black),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.vehicleNo,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 18,
+                                color: Color(CustomColors.PURPLE_DARK),
+                                fontFamily: "Poppins-Bold",
                               ),
+                            ),
+                          ),
+                          if (widget.isDefault)
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(
+                                  CustomColors.GREEN_BUTTON,
+                                ).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Color(
+                                    CustomColors.GREEN_BUTTON,
+                                  ).withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                'DEFAULT',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(CustomColors.GREEN_BUTTON),
+                                  fontFamily: "Poppins-Bold",
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(CustomColors.PURPLE_DARK),
+                              Color(CustomColors.PURPLE_DARK).withOpacity(0.8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(
+                                CustomColors.PURPLE_DARK,
+                              ).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    SizedBox(height: 7),
-                    Container(
-                      width: 80,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Color(CustomColors.PURPLE_DARK)
-                                .withOpacity(0.3),
-                            width: 1),
-                        color: Color(CustomColors.PURPLE_DARK).withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      margin: EdgeInsets.only(left: 30),
-                      child: Padding(
-                        padding: const EdgeInsets.all(3.0),
                         child: Text(
-                          textAlign: TextAlign.center,
                           widget.vehicleType,
                           style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 15,
-                              color: Colors.white),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontFamily: "Poppins-Bold",
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        isFromAddVehicle
-                            ? Visibility(
-                                visible: isFromAddVehicle,
-                                child: Container(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      isLoading
-                                          ? Container(
-                                              margin: EdgeInsets.only(left: 30),
-                                              width: screenWidth * 0.04,
-                                              height: screenHeight * 0.04,
-                                              child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        Color(CustomColors
-                                                            .GREEN_BUTTON)),
-                                                strokeWidth: 4,
-                                              ),
-                                            )
-                                          : Container(
-                                              margin: EdgeInsets.only(left: 10),
-                                              child: isDefaultSet == false
-                                                  ? OutlinedButton(
-                                                      onPressed: () {
-                                                        addVehicle(
-                                                            widget.vehicleNo,
-                                                            widget.vehicleType);
-                                                      },
-                                                      child: Container(
-                                                        child: Text(
-                                                          'Set Default',
-                                                          style: TextStyle(
-                                                              color: const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  248,
-                                                                  245,
-                                                                  245),
-                                                              fontSize: 13,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                      ),
-                                                      style: OutlinedButton
-                                                          .styleFrom(
-                                                        backgroundColor: Color(
-                                                                CustomColors
-                                                                    .GREEN_DARK)
-                                                            .withOpacity(0.7),
-                                                        side: BorderSide(
-                                                          color: Color(
-                                                              CustomColors
-                                                                  .GREEN_DARK),
-                                                        ),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : SizedBox()),
-                                    ],
-                                  ),
-                                ))
-                            : Container(),
-                        isFromAddVehicle
-                            ? Visibility(
-                                visible: isFromAddVehicle,
-                                child: Container(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      isLoadingDeletion
-                                          ? Container(
-                                              margin: EdgeInsets.only(top: 50),
-                                              width: 30,
-                                              height: 30,
-                                              child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        Color(CustomColors
-                                                            .GREEN_BUTTON)),
-                                                strokeWidth: 4,
-                                              ),
-                                            )
-                                          : Container(
-                                              margin: EdgeInsets.only(left: 3),
-                                              child: OutlinedButton(
-                                                onPressed: () {
-                                                  deleteVehicle(
-                                                      widget.vehicleNo);
-                                                },
-                                                child: Container(
-                                                  child: Text(
-                                                    'Delete',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: const Color
-                                                            .fromARGB(
-                                                            255, 246, 243, 243),
-                                                        fontSize: 13),
-                                                  ),
-                                                ),
-                                                style: OutlinedButton.styleFrom(
-                                                  backgroundColor: Color(
-                                                          CustomColors
-                                                              .GREEN_DARK)
-                                                      .withOpacity(0.7),
-                                                  side: BorderSide(
-                                                    color: Color(CustomColors
-                                                        .GREEN_DARK),
-                                                  ),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                    ],
-                                  ),
-                                ))
-                            : Container(),
-                      ],
-                    )
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
-            isVisibleFullCard
-                ? Visibility(
-                    visible: isVisibleFullCard,
-                    child: Column(
-                      children: [
-                        // Divider(
-                        //   color: Colors.grey.withOpacity(0.5),
-                        //   thickness: 1,
-                        // ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                height: 40,
-                                width: 285,
-                                padding: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 12.0),
-                                      child: Icon(
-                                        Icons.location_on,
-                                        color: Color(CustomColors.GREEN_DARK),
-                                        size: 30,
-                                      ),
-                                    ),
-                                    Text(
-                                      textAlign: TextAlign.center,
-                                      'Parked At: ' + widget.address!,
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              // child: Container(
-                              //   child: widget.parkingCharges != null
-                              //       ? Text(
-                              //           'Parking Charges: ' +
-                              //               (widget.parkingCharges ?? ""),
-                              //           style: TextStyle(
-                              //               fontSize: 14,
-                              //               fontWeight: FontWeight.w600,
-                              //               color: Colors.black.withOpacity(0.5)),
-                              //         )
-                              //       : Container(),
-                              // ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(),
-            isVisibleFullCard
-                ? Visibility(
-                    visible: isVisibleFullCard,
-                    child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
+            if (isFromAddVehicle) ...[
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  if (!widget.isDefault) ...[
+                    Expanded(
+                      child: isLoading
+                          ? Container(
                               height: 40,
-                              width: 120,
                               decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.GREEN_DARK)
-                                        .withOpacity(0.7),
-                                    width: 1),
-                                color: Color(CustomColors.GREEN_DARK)
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 25.0, top: 10.0),
-                                child: Text(
-                                  widget.date!,
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      color: Color(CustomColors.GREEN_DARK)),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              height: 40,
-                              width: 160,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(CustomColors.PURPLE_DARK)
-                                        .withOpacity(0.7),
-                                    width: 1),
-                                color: Color(CustomColors.PURPLE_DARK)
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10.0),
-                                    child: Icon(
-                                      Icons.calendar_month,
-                                      color: Color(CustomColors.PURPLE_DARK),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.only(left: 12, top: 3),
-                                    child: Text(
-                                      widget.time!,
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
-                                          color:
-                                              Color(CustomColors.PURPLE_DARK)),
-                                    ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(
+                                      CustomColors.GREEN_BUTTON,
+                                    ).withOpacity(0.2),
+                                    blurRadius: 10,
+                                    offset: Offset(0, 4),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        )),
-                  )
-                : Container(),
-            isVisibleFullCard
-                ? Visibility(
-                    visible: isVisibleFullCard,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 40,
-                            width: 200,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Color(CustomColors.GREEN_DARK)
-                                    .withOpacity(0.7),
-                              ),
-                              color: Color(CustomColors.GREEN_DARK)
-                                  .withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 5,
-                                  ),
-                                  child: Icon(
-                                    Icons.lock_clock,
-                                    color: Color(CustomColors.GREEN_DARK),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(CustomColors.GREEN_BUTTON),
+                                    ),
+                                    strokeWidth: 3,
                                   ),
                                 ),
-                                SizedBox(width: 10),
-                                Text(
-                                  widget.timer!,
+                              ),
+                            )
+                          : Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(CustomColors.GREEN_BUTTON),
+                                    Color(
+                                      CustomColors.GREEN_BUTTON,
+                                    ).withOpacity(0.8),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(
+                                      CustomColors.GREEN_BUTTON,
+                                    ).withOpacity(0.3),
+                                    blurRadius: 12,
+                                    offset: Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  addVehicle(
+                                    widget.vehicleNo,
+                                    widget.vehicleType,
+                                  );
+                                },
+                                icon: Icon(
+                                  Iconsax.tick_circle,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  'Set Default',
                                   style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      color: Color(CustomColors.GREEN_DARK)),
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Poppins-Bold",
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                    ),
+                    SizedBox(width: 12),
+                  ],
+                  if (!widget.isDefault)
+                    Expanded(
+                      child: isLoadingDeletion
+                          ? Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Color.fromARGB(
+                                    255,
+                                    232,
+                                    85,
+                                    75,
+                                  ).withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color.fromARGB(255, 232, 85, 75),
+                                    ),
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Color.fromARGB(255, 232, 85, 75),
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromARGB(
+                                      255,
+                                      232,
+                                      85,
+                                      75,
+                                    ).withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  deleteVehicle(widget.vehicleNo);
+                                },
+                                icon: Icon(
+                                  Iconsax.trash,
+                                  size: 16,
+                                  color: Color.fromARGB(255, 232, 85, 75),
+                                ),
+                                label: Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromARGB(255, 232, 85, 75),
+                                    fontSize: 13,
+                                    fontFamily: "Poppins-Bold",
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                    ),
+                ],
+              ),
+            ],
+            if (isVisibleFullCard) ...[
+              SizedBox(height: 20),
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Color(CustomColors.PURPLE_LIGHT).withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Color(CustomColors.PURPLE_LIGHT).withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Color(
+                              CustomColors.GREEN_BUTTON,
+                            ).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.location_on,
+                            color: Color(CustomColors.GREEN_BUTTON),
+                            size: 18,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Parked At: ${widget.address!}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                              fontFamily: "Poppins",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Color(
+                                CustomColors.GREEN_BUTTON,
+                              ).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Color(
+                                  CustomColors.GREEN_BUTTON,
+                                ).withOpacity(0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              widget.date!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(CustomColors.GREEN_BUTTON),
+                                fontFamily: "Poppins-Bold",
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Color(
+                                CustomColors.PURPLE_DARK,
+                              ).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Color(
+                                  CustomColors.PURPLE_DARK,
+                                ).withOpacity(0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  color: Color(CustomColors.PURPLE_DARK),
+                                  size: 14,
+                                ),
+                                SizedBox(width: 6),
+                                Text(
+                                  widget.time!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(CustomColors.PURPLE_DARK),
+                                    fontFamily: "Poppins-Bold",
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(width: 15),
-                          // Padding(
-                          //   padding: const EdgeInsets.only(left: 12),
-                          //   child: Container(
-                          //     height: 40,
-                          //     width: 160,
-                          //     decoration: BoxDecoration(
-                          //       border: Border.all(
-                          //         color: Color(CustomColors.PURPLE_DARK)
-                          //             .withOpacity(0.7),
-                          //       ),
-                          //       color: Color(CustomColors.PURPLE_DARK)
-                          //           .withOpacity(0.3),
-                          //       borderRadius: BorderRadius.circular(10),
-                          //     ),
-                          //     child: widget.parkingCharges != null
-                          //         ? Row(
-                          //             children: [
-                          //               Icon(
-                          //                 Icons.money,
-                          //                 color:
-                          //                     Color(CustomColors.PURPLE_DARK),
-                          //               ),
-                          //               Padding(
-                          //                 padding: const EdgeInsets.only(
-                          //                     top: 3, left: 10),
-                          //                 child: Text(
-                          //                   'Charges: ' +
-                          //                       (widget.parkingCharges ?? ""),
-                          //                   style: TextStyle(
-                          //                       fontSize: 15,
-                          //                       fontWeight: FontWeight.w900,
-                          //                       color: Color(
-                          //                           CustomColors.PURPLE_DARK)),
-                          //                 ),
-                          //               ),
-                          //             ],
-                          //           )
-                          //         : Container(),
-                          //   ),
-                          // ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(CustomColors.GREEN_BUTTON).withOpacity(0.1),
+                            Color(CustomColors.GREEN_BUTTON).withOpacity(0.05),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Color(
+                            CustomColors.GREEN_BUTTON,
+                          ).withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.timer,
+                            color: Color(CustomColors.GREEN_BUTTON),
+                            size: 16,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            widget.timer!,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color(CustomColors.GREEN_BUTTON),
+                              fontFamily: "Poppins-Bold",
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  )
-                : Container(),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
-    ));
+    );
   }
 
   void addVehicle(String vehicleNo, String vehicleType) async {
@@ -559,13 +565,20 @@ class _History extends State<History> {
     final ApiService apiService = ApiService(dio);
 
     try {
-      final response = await apiService
-          .addVehicle(AddVehicleRequest(userID!, vehicleNo, vehicleType));
+      final response = await apiService.addVehicle(
+        AddVehicleRequest(userID!, vehicleNo, vehicleType),
+      );
 
       sharedPreferences.setString(Constants.VEHICLE_ID, response.vehicleID);
       sharedPreferences.setString(Constants.VEHICLE_NO, vehicleNo);
       sharedPreferences.setString(Constants.VEHICLE_TYPE, vehicleType);
       CommonUtil().showToast("Default Vehicle Changed");
+
+      if (widget.onDefaultVehicleChanged != null) {
+        widget.onDefaultVehicleChanged!(vehicleNo);
+      }
+
+      widget.getVehicleHistory();
     } on DioException catch (e) {
       String errorMessage = e.response?.data['message'];
       print("errorMessage---" + errorMessage.toString());
@@ -581,7 +594,7 @@ class _History extends State<History> {
     String? accessToken = sharedPreferences.getString(Constants.ACCESS_TOKEN);
     String defaultVehicleNo =
         sharedPreferences.getString(Constants.VEHICLE_NO) ?? "";
-    if (defaultVehicleNo == widget.vehicleNo) {
+    if (defaultVehicleNo == vehicleNo) {
       CommonUtil().showToast("Cannot Delete Default Vehicle");
       return;
     }
@@ -611,20 +624,5 @@ class _History extends State<History> {
     setState(() {
       isLoadingDeletion = false;
     });
-  }
-
-  Future<void> checkIfDefaultVehicleSet() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? defaultVehicleID = prefs.getString(Constants.VEHICLE_ID);
-    if (defaultVehicleID == widget.vehicleNo) {
-      setState(() {
-        isDefaultSet = true;
-        //   print("Default Vehicle Set: " + widget.vehicleNo);
-      });
-    } else {
-      setState(() {
-        isDefaultSet = false;
-      });
-    }
   }
 }

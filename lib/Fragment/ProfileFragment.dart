@@ -252,37 +252,37 @@ class ProfileFragmentState extends State<ProfileFragment> {
                         ),
                       ),
                     ),
-                  SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Color(
-                          CustomColors.GREEN_BUTTON,
-                        ).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Color(
-                            CustomColors.GREEN_BUTTON,
-                          ).withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        'Update Image',
-                        style: TextStyle(
-                          color: Color(CustomColors.GREEN_BUTTON),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: "Poppins-Bold",
-                        ),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(height: 12),
+                  // GestureDetector(
+                  //   onTap: () {},
+                  //   child: Container(
+                  //     padding: EdgeInsets.symmetric(
+                  //       horizontal: 16,
+                  //       vertical: 8,
+                  //     ),
+                  //     decoration: BoxDecoration(
+                  //       color: Color(
+                  //         CustomColors.GREEN_BUTTON,
+                  //       ).withOpacity(0.1),
+                  //       borderRadius: BorderRadius.circular(20),
+                  //       border: Border.all(
+                  //         color: Color(
+                  //           CustomColors.GREEN_BUTTON,
+                  //         ).withOpacity(0.3),
+                  //         width: 1,
+                  //       ),
+                  //     ),
+                  //     child: Text(
+                  //       'Update Image',
+                  //       style: TextStyle(
+                  //         color: Color(CustomColors.GREEN_BUTTON),
+                  //         fontSize: 12,
+                  //         fontWeight: FontWeight.w600,
+                  //         fontFamily: "Poppins-Bold",
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -329,7 +329,10 @@ class ProfileFragmentState extends State<ProfileFragment> {
                   isEditable = true;
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => EditProfile()),
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditProfile(name: customerName, email: emailID),
+                    ),
                   );
                 });
               },

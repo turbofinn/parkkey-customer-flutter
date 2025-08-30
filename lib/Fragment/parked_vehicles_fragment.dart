@@ -73,7 +73,7 @@ class _ParkedFragmentState extends State<ParkedFragment> {
                   child: isLoading
                       ? _buildLoadingState()
                       : errorMessage.isNotEmpty
-                      ? _buildErrorState()
+                      ? _buildEmptyState()
                       : customerVehicleResponseList.isEmpty
                       ? _buildEmptyState()
                       : _buildVehicleList(),
@@ -271,7 +271,7 @@ class _ParkedFragmentState extends State<ParkedFragment> {
                 ),
                 SizedBox(height: 28),
                 Text(
-                  'No Parking History',
+                  'No Parked Vehicle',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -281,7 +281,7 @@ class _ParkedFragmentState extends State<ParkedFragment> {
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'There are currently no vehicles in\nthe parking history.',
+                  'There are currently no vehicles in\nthe parking.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -377,6 +377,7 @@ class _ParkedFragmentState extends State<ParkedFragment> {
       final ApiService apiService = ApiService(dio);
 
       final response = await apiService.getCustomerVehicleDetails(userID!);
+      log('leo: ${response.customerVehicleList.first.parkingLocation}');
 
       List<CustomerVehicleResponse> tempList = [];
       for (var vehicle in response.customerVehicleList) {

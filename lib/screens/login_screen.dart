@@ -1,10 +1,7 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:parkey_customer/Clippers/login_screen_clipper1.dart';
-import 'package:parkey_customer/HomeFragment.dart';
 import 'package:parkey_customer/models/send_otp_request.dart';
 import 'package:parkey_customer/models/send_otp_response.dart';
 import 'package:parkey_customer/models/verify_otp_request.dart';
@@ -14,10 +11,10 @@ import 'package:parkey_customer/screens/post_login_screen.dart';
 import 'package:parkey_customer/utils/common_util.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Clippers/login_screen_clipper2.dart';
 import '../colors/CustomColors.dart';
 import '../services/api_service.dart';
 import '../utils/Constants.dart';
+import 'dart:async';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,300 +33,429 @@ class _LoginScreenState extends State<LoginScreen> {
       isOtpEntered = false,
       isLoading = false,
       isWhatsAppAvailable = false;
-  final apiService =
-      ApiService(Dio(BaseOptions(contentType: "application/json")));
+  Timer? _timer;
+  int _resendCountdown = 0;
+  bool _canResend = true;
+
+  final apiService = ApiService(
+    Dio(BaseOptions(contentType: "application/json")),
+  );
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    mobileNumberInputController.dispose();
+    pinController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  void _startResendTimer() {
+    setState(() {
+      _canResend = false;
+      _resendCountdown = 30;
+    });
+
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_resendCountdown > 0) {
+          _resendCountdown--;
+        } else {
+          _canResend = true;
+          timer.cancel();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.grey[50],
         resizeToAvoidBottomInset: true,
-        body: Material(
-          child: ListView(
-            children: [
-              Stack(
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ClipPath(
-                        clipper: LoginScreenClipper1(),
-                        child: Container(
-                          height: 150,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(CustomColors.PURPLE_LIGHT),
-                              Color(CustomColors.PURPLE_DARK).withOpacity(0.5)
-                            ],
-                          )),
-                        ),
+        body: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(CustomColors.PURPLE_DARK).withOpacity(0.05),
+                    Colors.grey[50]!,
+                  ],
+                ),
+              ),
+            ),
+            SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom:
+                    MediaQuery.of(context).viewInsets.bottom +
+                    40, // Increased padding
+              ),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                constraints: BoxConstraints(
+                  minHeight:
+                      MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).viewPadding.bottom,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/hand.png',
+                      height: 220,
+                      fit: BoxFit.contain,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Verify Your Mobile Number',
+                      style: TextStyle(
+                        color: Color(CustomColors.PURPLE_DARK),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        fontFamily: "Poppins-Bold",
                       ),
-                      ClipPath(
-                        clipper: LoginScreenClipper2(),
-                        child: Container(
-                          height: MediaQuery.of(context).size.height - 150,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(CustomColors.GREEN_LIGHT).withOpacity(0.1),
-                              Color(CustomColors.GREEN_LIGHT).withOpacity(0.2)
-                            ],
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Image.asset("assets/images/hand.png"),
-                      Center(
-                          child: Text(
-                        'Verify Your Mobile Number',
+                    ),
+                    SizedBox(height: 8),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Text(
+                        'Please Let Us Know Your Mobile Number For Verification purpose',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 24),
-                      )),
-                      Center(
-                        child: Container(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            child: Center(
-                                child: Text(
-                              'Please Let Us Know Your Mobile Number For Verification purpose',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
-                            ))),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                          fontFamily: "Poppins",
+                        ),
                       ),
-                      Center(
-                        child: Container(
-                            margin: EdgeInsets.only(top: 50),
-                            height: 50,
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(
+                              CustomColors.PURPLE_DARK,
+                            ).withOpacity(0.08),
+                            blurRadius: 16,
+                            offset: Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            height: 48,
                             width: MediaQuery.of(context).size.width * 0.8,
                             child: isVisibleOtpTextField
-                                ? Directionality(
-                                    textDirection: TextDirection.ltr,
-                                    child: Pinput(
-                                      controller: pinController,
-                                      focusNode: focusNode,
-                                      defaultPinTheme: PinTheme(
-                                        width: 50,
-                                        height: 50,
-                                        textStyle: const TextStyle(
-                                          fontSize: 22,
-                                          color: Color(0xff000000),
-                                        ),
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.5),
-                                                blurRadius: 5,
-                                                offset: Offset(0, 2))
-                                          ],
-                                          color: Color(0xffffffff),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          border: isOtpValid
-                                              ? Border.all(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.5))
-                                              : Border.all(
-                                                  color: Color(0xffFF0000)),
-                                        ),
-                                      ),
-                                      separatorBuilder: (index) =>
-                                          const SizedBox(width: 36),
-                                      // validator: (value) {
-                                      //   return value == '2222' ? null : '';
-                                      // },
-                                      hapticFeedbackType:
-                                          HapticFeedbackType.lightImpact,
-                                      onCompleted: (pin) {
-                                        setState(() {
-                                          isOtpEntered = true;
-                                        });
-                                        debugPrint('onCompleted: $pin');
-                                      },
-                                      onChanged: (value) {
-                                        debugPrint('onChanged: $value');
-                                      },
-                                      cursor: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(
-                                                bottom: 9),
-                                            width: 22,
-                                            height: 1,
+                                ? Center(
+                                    child: Directionality(
+                                      textDirection: TextDirection.ltr,
+                                      child: Pinput(
+                                        controller: pinController,
+                                        focusNode: focusNode,
+                                        length: 4,
+                                        defaultPinTheme: PinTheme(
+                                          width: 48,
+                                          height: 48,
+                                          textStyle: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
                                             color: Color(
-                                                CustomColors.GREEN_BUTTON),
+                                              CustomColors.PURPLE_DARK,
+                                            ),
                                           ),
-                                        ],
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[50],
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            border: Border.all(
+                                              color: isOtpValid
+                                                  ? Colors.grey[300]!
+                                                  : Colors.red,
+                                              width: 1,
+                                            ),
+                                          ),
+                                        ),
+                                        focusedPinTheme: PinTheme(
+                                          width: 48,
+                                          height: 48,
+                                          textStyle: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(
+                                              CustomColors.PURPLE_DARK,
+                                            ),
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            border: Border.all(
+                                              color: Color(
+                                                CustomColors.GREEN_BUTTON,
+                                              ),
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        separatorBuilder: (index) =>
+                                            SizedBox(width: 10),
+                                        onCompleted: (pin) {
+                                          setState(() {
+                                            isOtpEntered = true;
+                                          });
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {
+                                            isOtpValid = true;
+                                          });
+                                        },
+                                        cursor: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                bottom: 8,
+                                              ),
+                                              width: 20,
+                                              height: 1,
+                                              color: Color(
+                                                CustomColors.GREEN_BUTTON,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   )
                                 : Container(
-                                    height: 50,
-                                    alignment: Alignment.center,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.6,
+                                    height: 40,
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                            color: Colors.grey, width: 2)),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: Row(
-                                        children: [
-                                          Text('+91 '),
-                                          Expanded(
-                                            child: Container(
-                                              margin:
-                                                  EdgeInsets.only(bottom: 7),
-                                              child: TextField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                controller:
-                                                    mobileNumberInputController,
-                                                maxLength: 10,
-                                                onChanged: (text) {
-                                                  if (text.length == 10) {
-                                                    FocusScope.of(context)
-                                                        .unfocus();
-                                                  }
-                                                },
-                                                decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  isCollapsed: true,
-                                                  counterText: '',
-                                                ),
+                                      color: Colors.grey[50],
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.grey[300]!,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: Color(
+                                              CustomColors.GREEN_BUTTON,
+                                            ).withOpacity(0.1),
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10),
+                                              bottomLeft: Radius.circular(10),
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.phone_android,
+                                              size: 18,
+                                              color: Color(
+                                                CustomColors.GREEN_BUTTON,
                                               ),
                                             ),
                                           ),
-                                        ],
+                                        ),
+                                        Expanded(
+                                          child: TextField(
+                                            keyboardType: TextInputType.number,
+                                            controller:
+                                                mobileNumberInputController,
+                                            maxLength: 10,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(
+                                                CustomColors.PURPLE_DARK,
+                                              ),
+                                            ),
+                                            onChanged: (text) {
+                                              if (text.length == 10) {
+                                                FocusScope.of(
+                                                  context,
+                                                ).unfocus();
+                                              }
+                                            },
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                  ),
+                                              counterText: '',
+                                              hintText: 'Enter mobile number',
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey[500],
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          ),
+                          if (!isVisibleOtpTextField) ...[
+                            SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: Checkbox(
+                                      value: isWhatsAppAvailable,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isWhatsAppAvailable = value!;
+                                        });
+                                      },
+                                      activeColor: Color(
+                                        CustomColors.GREEN_BUTTON,
                                       ),
-                                    ))),
-                      ),
-                      !isVisibleOtpTextField
-                          ? Center(
-                              child: Container(
-                                margin: EdgeInsets.only(top: 30),
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Checkbox(
-                                        activeColor:
-                                            Color(CustomColors.GREEN_BUTTON),
-                                        value: isWhatsAppAvailable,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            isWhatsAppAvailable = value!;
-                                          });
-                                          print('checkboc--' +
-                                              isWhatsAppAvailable.toString());
-                                          print(
-                                              'checkboc--' + value.toString());
-                                        }),
-                                    Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.4,
-                                        child: Center(
-                                            child: Text(
-                                                'Is This Same Number In Whatsapp',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: Color(CustomColors
-                                                        .GREEN_DARK),
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 14))))
-                                  ],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'Is this same number in whatsApp',
+                                      style: TextStyle(
+                                        color: Color(CustomColors.GREEN_BUTTON),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
+                                        fontFamily: "Poppins",
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          SizedBox(height: 16),
+                          if (isLoading)
+                            SizedBox(
+                              width: 36,
+                              height: 36,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(CustomColors.GREEN_BUTTON),
                                 ),
+                                strokeWidth: 3,
                               ),
                             )
-                          : Container(),
-                      Center(
-                        child: isLoading
-                            ? Container(
-                                margin: EdgeInsets.only(top: 50),
-                                width: 30,
-                                height: 30,
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(CustomColors.GREEN_BUTTON)),
-                                  strokeWidth: 4,
-                                ),
-                              )
-                            : Container(
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                margin: EdgeInsets.only(top: 50, bottom: 10),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    !isVisibleOtpTextField
-                                        ? sendOtp(
-                                            mobileNumberInputController.text)
-                                        : verifyOtp(
-                                            mobileNumberInputController.text,
-                                            pinController.text);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      minimumSize: Size(200, 40),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      backgroundColor:
-                                          Color(CustomColors.GREEN_BUTTON)
-                                              .withOpacity(0.9)),
-                                  child: isVisibleOtpTextField
-                                      ? const Text('Verify',
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.white))
-                                      : const Text('Send',
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.white)),
-                                ),
-                              ),
-                      ),
-                      isVisibleOtpTextField
-                          ? GestureDetector(
+                          else
+                            GestureDetector(
                               onTap: () {
-                                sendOtp(mobileNumberInputController.text);
+                                !isVisibleOtpTextField
+                                    ? sendOtp(mobileNumberInputController.text)
+                                    : verifyOtp(
+                                        mobileNumberInputController.text,
+                                        pinController.text,
+                                      );
                               },
-                              child: Center(
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 6),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(CustomColors.GREEN_BUTTON),
+                                      Color(
+                                        CustomColors.GREEN_BUTTON,
+                                      ).withOpacity(0.8),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(
+                                        CustomColors.GREEN_BUTTON,
+                                      ).withOpacity(0.3),
+                                      blurRadius: 6,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
                                   child: Text(
-                                    'Resend OTP',
+                                    isVisibleOtpTextField ? 'Verify' : 'Send',
                                     style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(CustomColors.PURPLE_DARK)
-                                            .withOpacity(0.9)),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      fontFamily: "Poppins-Bold",
+                                    ),
                                   ),
                                 ),
-                              ))
-                          : Container()
-                    ],
-                  )
-                ],
+                              ),
+                            ),
+                          if (isVisibleOtpTextField) ...[
+                            SizedBox(height: 12),
+                            GestureDetector(
+                              onTap: _canResend
+                                  ? () {
+                                      sendOtp(mobileNumberInputController.text);
+                                    }
+                                  : null,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                child: Text(
+                                  _canResend
+                                      ? 'Resend OTP'
+                                      : 'Resend OTP in ${_resendCountdown}s',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: _canResend
+                                        ? Color(CustomColors.GREEN_BUTTON)
+                                        : Colors.grey[500],
+                                    fontWeight: FontWeight.w600,
+                                    decoration: _canResend
+                                        ? TextDecoration.underline
+                                        : TextDecoration.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 40), // Increased bottom padding
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -346,15 +472,17 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = true;
     });
-    final SendOtpResponse sendOtpResponse =
-        await apiService.getOtp(SendOtpRequest(mobileNo, isWhatsAppAvailable));
     try {
+      final SendOtpResponse sendOtpResponse = await apiService.getOtp(
+        SendOtpRequest(mobileNo, isWhatsAppAvailable),
+      );
       print(sendOtpResponse.message);
       if (sendOtpResponse.message == 'OTP Sent Successfully.') {
         print(sendOtpResponse.message);
         setState(() {
           isVisibleOtpTextField = true;
         });
+        _startResendTimer();
       }
       setState(() {
         isLoading = false;
@@ -382,8 +510,9 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
     try {
-      final VerifyOtpResponse response =
-          await apiService.verifyOtp(VerifyOtpRequest(mobileNo, otp));
+      final VerifyOtpResponse response = await apiService.verifyOtp(
+        VerifyOtpRequest(mobileNo, otp),
+      );
       String defaultVehicle = response.defaultVehicleNo ?? "";
       print('verify--' + defaultVehicle);
       if (response.status?.code == 1001) {
@@ -394,44 +523,43 @@ class _LoginScreenState extends State<LoginScreen> {
         sharedPreferences.setString(Constants.MOBILE_NUMBER, mobileNo);
         sharedPreferences.setString(Constants.ACCESS_TOKEN, response.token!);
         sharedPreferences.setString(
-            Constants.REFRESH_TOKEN, response.refreshToken!);
+          Constants.REFRESH_TOKEN,
+          response.refreshToken!,
+        );
 
         if (defaultVehicle == "") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => PostLoginScreen()));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => PostLoginScreen()),
+          );
         } else {
           final jsonDecoded = jsonDecode(defaultVehicle);
           String defaultVehicleNo = jsonDecoded['vehicleNo'];
           String defaultVehicleType = jsonDecoded['vehicleType'];
           String defaultVehicleID = jsonDecoded['vehicleID'];
 
-          print('number-->' +
-              defaultVehicleNo +
-              " type-->" +
-              defaultVehicleType +
-              " id-->" +
-              defaultVehicleID);
+          print(
+            'number-->' +
+                defaultVehicleNo +
+                " type-->" +
+                defaultVehicleType +
+                " id-->" +
+                defaultVehicleID,
+          );
 
           sharedPreferences.setString(Constants.VEHICLE_ID, defaultVehicleID);
           sharedPreferences.setString(Constants.VEHICLE_NO, defaultVehicleNo);
           sharedPreferences.setString(
-              Constants.VEHICLE_TYPE, defaultVehicleType);
+            Constants.VEHICLE_TYPE,
+            defaultVehicleType,
+          );
 
           Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => HomeScreen(
-                        index: 0,
-                        path: '/',
-                      )));
-
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => HomeScreen(
-                        index: 0,
-                        path: '/',
-                      )));
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(index: 0, path: '/'),
+            ),
+          );
         }
       } else {
         CommonUtil().showToast(response.message!);
