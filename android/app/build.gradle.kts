@@ -6,8 +6,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.parkey_customer"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.parkey.customer"
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -19,17 +19,26 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    signingConfigs {
+        create("prod") {
+            keyAlias = "parkkey-customer-app"
+            keyPassword = "Parkkey@123"
+            storeFile = file("C:/Users/ASUS/Documents/GitHub/parkkey-customer-flutter/android/app/parkey-customer-app.jks")
+            storePassword = "Parkkey@123"
+        }
+    }
+
     defaultConfig {
-        applicationId = "com.example.parkey_customer"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId = "com.parkey.customer"
+        minSdk = 21
+        targetSdk = 36
+        versionCode = 12
+        versionName = "1.0.8"
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("prod")
 
             // ✅ Enable R8 / ProGuard
             isMinifyEnabled = true
